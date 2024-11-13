@@ -1,0 +1,52 @@
+name: Deploy API
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Retrieve production env file
+        run: |
+          touch api/.env.production
+          echo ${{ secrets.PRODUCTION_ENV_B64 }} | base64 --decode >> api/.env.production
+        shell: bash
+
+      - name: Handle sentry
+        run: |
+          touch api/.sentryclirc
+          echo ${{ secrets.SENTRY_B64_API }} | base64 --decode >> api/.sentryclirc
+        shell: bash
+
+      - name: Build docker image
+        run: cd api && docker build --build-arg SHA1=$(git rev-parse HEAD) -t api .
+
+      - name: Delete env files
+        run: |
+          rm api/.env.production
+          rm api/.sentryclirc
+        shell: bash
+
+      - name: Tag docker image
+        run: docker tag api ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-3.amazonaws.com/api
+
+      - name: Login to AWS ECR
+        run: aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-3.amazonaws.com
+
+      - name: Push to AWS ECR
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-3.amazonaws.com/api
+
+      - name: Init & Apply
+        run: cd api/infra && terraform init -input=false && terraform apply -auto-approve

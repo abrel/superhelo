@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+
+    "paths": {
+      "@@/*": ["src/*"]
+    },
+
+    "skipLibCheck": true,
+    "target": "es2018",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "declaration": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "sourceRoot": "/"
+  },
+  "include": ["src", "tests", "env.d.ts"],
+  "ts-node": {
+    "files": true
+  }
+}
+

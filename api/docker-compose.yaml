@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: sh-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: sh
+      MONGO_INITDB_ROOT_PASSWORD: sh
+      MONGO_INITDB_DATABASE: sh
+    ports:
+      - 27017:27017
+    restart: always
+    networks:
+      - sh-dev-network
+    volumes:
+      - sh_mongo_data_container:/data/db
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: sh-localstack
+    restart: always
+    ports:
+      - 4566:4566
+    networks:
+      - sh-dev-network
+    environment:
+      - SERVICES=sqs,s3
+      - DEBUG=1
+      - DEFAULT_REGION=eu-west-3
+    volumes:
+      - '${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+volumes:
+  sh_mongo_data_container:
+
+networks:
+  sh-dev-network:
+    external: true
