@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { Roles, Genders, MaritalStatuses } from '@@/constants/user';
 import { DocumentTypes } from '@@/constants/document';
+import { MeasureTypes } from '@@/constants/measure';
 
 export const loginValidationSchema = Joi.object({
   email: Joi.string()
@@ -66,7 +67,98 @@ const userValidationSchema = {
         .required(),
     }),
   ),
+  measures: Joi.array().items(
+    Joi.object({
+      type: Joi.string()
+        .valid(...Object.values(MeasureTypes))
+        .required(),
+      startDate: Joi.date().required(),
+      endDate: Joi.date().min(Joi.ref('startDate')).optional(),
+      motive: Joi.string(),
+      judgment: Joi.object({
+        date: Joi.date(),
+        court: Joi.object({
+          name: Joi.string().required(),
+          service: Joi.string(),
+          address: Joi.string(),
+          postcode: Joi.string(),
+          city: Joi.string(),
+          country: Joi.string(),
+          phone: Joi.string(),
+          fax: Joi.string(),
+        }),
+        attendees: Joi.array()
+          .items(
+            Joi.object({
+              name: Joi.string().required(),
+              role: Joi.string(),
+            }),
+          )
+          .optional(),
+      }),
+      documentIds: Joi.array()
+        .items(Joi.string().regex(/^[a-f\d]{24}$/i))
+        .optional(),
+    }),
+  ),
+  realEstateProperties: Joi.array().items(
+    Joi.object({
+      address: Joi.string(),
+      city: Joi.string(),
+      postcode: Joi.string(),
+      country: Joi.string().optional(),
+      value: Joi.number().optional().min(0),
+      floorArea: Joi.number().optional().min(0),
+      landArea: Joi.number().optional().min(0),
+      purchaseDate: Joi.date().optional(),
+      saleDate: Joi.date().optional().min(Joi.ref('purchaseDate')).messages({
+        'date.min':
+          "La date de vente doit être postérieure ou égale à la date d'achat.",
+      }),
+      deductions: Joi.array().items(
+        Joi.object({
+          value: Joi.number().required().min(0),
+          label: Joi.string().required(),
+        }),
+      ),
+      documentIds: Joi.array()
+        .items(Joi.string().regex(/^[a-f\d]{24}$/i))
+        .optional(),
+    }),
+  ),
+  personalProperties: Joi.array().items(
+    Joi.object({
+      label: Joi.string().required(),
+      value: Joi.number().required().min(0),
+      documentIds: Joi.array()
+        .items(Joi.string().regex(/^[a-f\d]{24}$/i))
+        .optional(),
+    }),
+  ),
+  debts: Joi.array().items(
+    Joi.object({
+      label: Joi.string().required(),
+      amount: Joi.number().required().min(0),
+      schedule: Joi.array().items(
+        Joi.object({
+          date: Joi.date().required(),
+          amortization: Joi.number().required().min(0),
+          interest: Joi.number().required().min(0),
+        }),
+      ),
+      documentIds: Joi.array()
+        .items(Joi.string().regex(/^[a-f\d]{24}$/i))
+        .optional(),
+    }),
+  ),
+  passwords: Joi.array().items(
+    Joi.object({
+      label: Joi.string().required(),
+      value: Joi.string().required(),
+    }),
+  ),
 };
+
 export const createhUserValidationSchema = Joi.object({
   firstName: Joi.string().trim().required(),
   lastName: Joi.string().trim().required(),

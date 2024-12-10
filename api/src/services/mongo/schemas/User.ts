@@ -1,5 +1,6 @@
 import { Schema, SchemaType, Types } from 'mongoose';
 import { Roles, Genders, MaritalStatuses } from '@@/constants/user';
+import { MeasureTypes } from '@@/constants/measure';
 
 const contactSchema = new Schema<SH.Contact>(
   {
@@ -23,6 +24,254 @@ const contactSchema = new Schema<SH.Contact>(
   {
     _id: false,
   },
+);
+
+export const attendeeSchema = new Schema<SH.Attendee>(
+  {
+    name: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    role: {
+      type: Schema.Types.String,
+      required: false,
+    },
+  },
+  { _id: false },
+);
+
+export const courtSchema = new Schema<SH.Court>(
+  {
+    name: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    service: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    address: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    postcode: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    city: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    country: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    phone: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    fax: {
+      type: Schema.Types.String,
+      required: false,
+    },
+  },
+  { _id: false },
+);
+
+export const judgmentSchema = new Schema<SH.Judgment>(
+  {
+    date: {
+      type: Schema.Types.Date,
+      required: false,
+    },
+    court: {
+      type: courtSchema,
+    },
+    attendees: {
+      type: [attendeeSchema],
+    },
+  },
+  { _id: false },
+);
+export const measureSchema = new Schema<SH.Measure>(
+  {
+    type: {
+      type: Schema.Types.String,
+      enum: MeasureTypes,
+      required: true,
+    },
+    motive: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    startDate: {
+      type: Schema.Types.Date,
+      required: true,
+    },
+    endDate: {
+      type: Schema.Types.Date,
+    },
+    judgment: {
+      type: judgmentSchema,
+    },
+    documentIds: {
+      type: [Schema.Types.ObjectId],
+      required: false,
+      ref: 'Document',
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+export const deductionSchema = new Schema<SH.Deduction>(
+  {
+    label: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    value: {
+      type: Schema.Types.Number,
+      required: true,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+export const realEstatePropertySchema = new Schema<SH.RealEstateProperty>(
+  {
+    address: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    city: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    postcode: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    country: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    value: {
+      type: Schema.Types.Number,
+      required: false,
+    },
+    floorArea: {
+      type: Schema.Types.Number,
+      required: false,
+    },
+    landArea: {
+      type: Schema.Types.Number,
+      required: false,
+    },
+    purchaseDate: {
+      type: Schema.Types.Date,
+      required: false,
+    },
+    saleDate: {
+      type: Schema.Types.Date,
+      required: false,
+    },
+    deductions: {
+      type: [deductionSchema],
+      required: false,
+    },
+    documentIds: {
+      type: [Schema.Types.ObjectId],
+      required: false,
+      ref: 'Document',
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+export const personalPropertySchema = new Schema<SH.PersonalProperty>(
+  {
+    label: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    value: {
+      type: Schema.Types.Number,
+      required: true,
+    },
+    documentIds: {
+      type: [Schema.Types.ObjectId],
+      required: false,
+      ref: 'Document',
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+export const scheduleItemSchema = new Schema<SH.ScheduleItem>(
+  {
+    date: {
+      type: Schema.Types.Date,
+      required: true,
+    },
+    amortization: {
+      type: Schema.Types.Number,
+      required: true,
+    },
+    interest: {
+      type: Schema.Types.Number,
+      required: true,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+export const debtSchema = new Schema<SH.Debt>(
+  {
+    label: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    amount: {
+      type: Schema.Types.Number,
+      required: true,
+    },
+    schedule: {
+      type: [scheduleItemSchema],
+      required: false,
+    },
+    documentIds: {
+      type: [Schema.Types.ObjectId],
+      required: false,
+      ref: 'Document',
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+export const PasswordSchema = new Schema<SH.PasswordItem>(
+  {
+    label: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    value: {
+      type: Schema.Types.String,
+      required: true,
+    },
+  },
+  { _id: false },
 );
 
 const userSchema = new Schema<SH.User>(
@@ -140,6 +389,26 @@ const userSchema = new Schema<SH.User>(
     },
     trustedContacts: {
       type: [contactSchema],
+      required: false,
+    },
+    measures: {
+      type: [measureSchema],
+      required: false,
+    },
+    realEstateProperties: {
+      type: [realEstatePropertySchema],
+      required: false,
+    },
+    personalProperties: {
+      type: [personalPropertySchema],
+      required: false,
+    },
+    debts: {
+      type: [debtSchema],
+      required: false,
+    },
+    passwords: {
+      type: [PasswordSchema],
       required: false,
     },
     isDeleted: {

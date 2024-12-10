@@ -14,11 +14,40 @@ declare namespace SH {
     Name: string;
   };
 
+  export type Court = {
+    name: string;
+    service: string;
+    address: string;
+    postcode: string;
+    city: string;
+    country: string;
+    phone: string;
+    fax: string;
+  };
+
+  export type Attendee = {
+    name: string;
+    role: string;
+  };
+
+  export type Judgment = {
+    date: Date;
+    court: Court;
+    attendees: Attendee[];
+  };
+
   export type Measure = {
     type: MeasureTypes;
+    motive: string;
     startDate: Date;
     endDate?: Date;
+    judgment: Judgment;
     documentIds?: Types.ObjectId[];
+  };
+
+  export type Deduction = {
+    value: number;
+    label: string;
   };
 
   export type RealEstateProperty = {
@@ -32,26 +61,27 @@ declare namespace SH {
     landArea?: number;
     purchaseDate?: Date;
     saleDate?: Date;
-    deductions: {
-      value: number;
-      label: string;
-    }[];
+    deductions: Deduction[];
 
     documentIds?: Types.ObjectId[];
   };
+
   export type PersonalProperty = {
     label: string;
     value: number;
     documentIds?: Types.ObjectId[];
   };
+
+  export type ScheduleItem = {
+    date: Date;
+    amortization: number;
+    interest: number;
+  };
+
   export type Debt = {
     label: string;
     amount: number;
-    schedule: {
-      date: Date;
-      amortization: number;
-      interest: number;
-    }[];
+    schedule: ScheduleItem[];
     documentIds?: Types.ObjectId[];
   };
 
@@ -60,6 +90,11 @@ declare namespace SH {
     lastName: string;
     email: string;
     phone: string;
+  };
+
+  export type PasswordItem = {
+    label: string;
+    value: string;
   };
 
   export type User = {
@@ -94,16 +129,12 @@ declare namespace SH {
     religion?: string;
     maritalStatus?: MaritalStatuses;
     children?: number;
-
     trustedContacts?: Contact[];
-
-    // Mesures de protection
     measures?: Measure[];
-
-    // Inventaire
     realEstateProperties?: RealEstateProperty[];
     personalProperties?: PersonalProperty[];
     debts?: Debt[];
+    passwords?: PasswordItem[];
 
     isDeleted?: boolean;
 
@@ -132,5 +163,11 @@ declare namespace SH {
 
     save: () => Promise<Document>;
     __v?: number;
+  };
+
+  export type DocumentContent = {
+    title: string;
+    data?: string;
+    b64Images?: string[];
   };
 }

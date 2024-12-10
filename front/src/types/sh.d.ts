@@ -13,11 +13,87 @@ declare namespace SH {
     refreshToken: string;
   };
 
+  export type Court = {
+    name: string;
+    service: string;
+    address: string;
+    postcode: string;
+    city: string;
+    country: string;
+    phone: string;
+    fax: string;
+  };
+
+  export type Attendee = {
+    name: string;
+    role: string;
+  };
+
+  export type Judgment = {
+    date: Date;
+    court: Court;
+    attendees: Attendee[];
+  };
+
+  export type Measure = {
+    type: MeasureTypes;
+    motive: string;
+    startDate: Date;
+    endDate?: Date;
+    judgment: Judgment;
+    documentIds?: Types.ObjectId[];
+  };
+
+  export type Deduction = {
+    value: number;
+    label: string;
+  };
+
+  export type RealEstateProperty = {
+    address?: string;
+    city?: string;
+    postcode?: string;
+    country?: string;
+
+    value?: number;
+    floorArea?: number;
+    landArea?: number;
+    purchaseDate?: Date;
+    saleDate?: Date;
+    deductions: Deduction[];
+
+    documentIds?: Types.ObjectId[];
+  };
+
+  export type PersonalProperty = {
+    label: string;
+    value: number;
+    documentIds?: Types.ObjectId[];
+  };
+
+  export type ScheduleItem = {
+    date: Date;
+    amortization: number;
+    interest: number;
+  };
+
+  export type Debt = {
+    label: string;
+    amount: number;
+    schedule: ScheduleItem[];
+    documentIds?: Types.ObjectId[];
+  };
+
   export type Contact = {
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
+  };
+
+  export type PasswordItem = {
+    label: string;
+    value: string;
   };
 
   export type User = {
@@ -54,6 +130,11 @@ declare namespace SH {
     children?: number;
 
     trustedContacts?: Contact[];
+    measures?: Measure[];
+    realEstateProperties?: RealEstateProperty[];
+    personalProperties?: PersonalProperty[];
+    debts?: Debt[];
+    passwords?: PasswordItem[];
 
     isDeleted?: boolean;
 

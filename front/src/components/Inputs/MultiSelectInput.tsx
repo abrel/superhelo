@@ -34,7 +34,7 @@ const MultiSelectInput: React.FC<{
 
   return (
     <div className="inline-block relative w-full">
-      {label && (
+      {!!label && (
         <label className="block font-main text-main text-sm mb-2" htmlFor={id}>
           {label}
         </label>

@@ -11,14 +11,18 @@ export const convertToFormData = (
       continue;
     }
 
+    const formKey = namespace ? `${namespace}[${key}]` : key;
     if (typeof value === 'object' && !(value instanceof Date)) {
-      convertToFormData(
-        value,
-        formData,
-        namespace ? `${namespace}[${key}]` : key,
-      );
+      if (value.length === 0) {
+        formData.append(formKey, '[]');
+      } else {
+        convertToFormData(
+          value,
+          formData,
+          namespace ? `${namespace}[${key}]` : key,
+        );
+      }
     } else {
-      const formKey = namespace ? `${namespace}[${key}]` : key;
       formData.append(formKey, String(value));
     }
   }

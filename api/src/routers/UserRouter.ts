@@ -21,6 +21,7 @@ import {
   handleUserDocuments,
   handleUserAvatar,
 } from '@@/controllers/UploadController';
+import { handleBodyEmptyArrays } from '@@/controllers/RootController';
 import {
   fetchUserDocuments,
   renderDocuments,
@@ -48,6 +49,7 @@ export default function Userouter(_app: Application): Router {
   router.delete('/:userId', deleteUser);
   router.patch('/:userId', [
     singleUploadMiddleware,
+    handleBodyEmptyArrays,
     handleUserAvatar,
     patchUser,
     renderUser,

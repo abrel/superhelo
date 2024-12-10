@@ -9,7 +9,7 @@ import {
   selectInputGenders,
   selectInputMaritalStatuses,
 } from '@@/constants/user';
-
+import { selectInputMeasureTypes } from '@@/constants/measure';
 import WardForm, { schema, WardFormType } from '@@/components/Forms/WardForm';
 import DocumentSection from '@@/components/DocumentSection';
 import SectionTitle from '@@/components/SectionTitle';
@@ -35,6 +35,10 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
         ...data,
         gender: data.gender.id,
         maritalStatus: data.maritalStatus.id,
+        measures: data.measures?.map((m: any) => ({
+          ...m,
+          type: m.type.id,
+        })),
         photo:
           typeof data.photo !== 'string' && data.photo?.length
             ? data.photo[0]
@@ -71,6 +75,10 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
         maritalStatus: selectInputMaritalStatuses.find(
           (g) => g.id === data.maritalStatus,
         ),
+        measures: data.measures?.map((m: SH.Measure) => ({
+          ...m,
+          type: selectInputMeasureTypes.find((t) => t.id === m.type),
+        })),
       });
     }
   }, [ward, form.reset, photoUrl]);

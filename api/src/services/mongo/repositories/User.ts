@@ -81,7 +81,7 @@ export const findOrCreateUser = async (
 export const updateUserById = async (
   id: string,
   payload: Record<string, unknown>,
-  meta: Record<string, unknown>,
+  meta?: Record<string, unknown>,
 ) => {
   const newUser = (await MongoManager.getModels().User.findOneAndUpdate(
     { _id: id },

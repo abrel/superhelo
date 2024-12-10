@@ -15,6 +15,8 @@ declare global {
       AWS_S3_ENDPOINT: string;
       AWS_SQS_ENDPOINT: string;
       S3_BUCKET: string;
+      BRIDGE_CLIENT_ID: string;
+      BRIDGE_CLIENT_SECRET: string;
     }
   }
 }
