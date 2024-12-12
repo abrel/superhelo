@@ -266,6 +266,10 @@ export const PasswordSchema = new Schema<SH.PasswordItem>(
       type: Schema.Types.String,
       required: true,
     },
+    username: {
+      type: Schema.Types.String,
+      required: false,
+    },
     value: {
       type: Schema.Types.String,
       required: true,

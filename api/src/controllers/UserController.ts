@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import omit from 'lodash.omit';
 import { createToken, createRefreshToken, tokenTTL } from '@@/services/jwt';
 import * as UserRepository from '@@/services/mongo/repositories/User';
+import BridgeService from '@@/services/bridge';
 import validator from '@@/validation/validator';
 import {
   createhUserValidationSchema,
@@ -10,6 +11,7 @@ import {
   searchValidationSchema,
 } from '@@/validation/schemas';
 import { Roles } from '@@/constants/user';
+import providers from '@@/constants/providers';
 import HttpError from '@@/utils/HttpError';
 import { formatName } from '@@/utils/string';
 
@@ -206,6 +208,78 @@ export const searchWards = async (
     req.sh.users = users;
 
     return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const fetchBrigeItems = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const [items, accounts] = await Promise.all([
+      BridgeService.retrieveUserItems(req.params.userId),
+      BridgeService.retrieveAccountsInformation(req.params.userId),
+    ]);
+
+    for (const item of items) {
+      item.accounts = accounts
+        .filter((a) => a.item_id === item.id)
+        .sort((a, b) => b.balance - a.balance);
+      const provider = providers.find((p) => p.id === item.provider_id);
+      item.provider_name = provider?.name;
+      item.provider_logo = provider?.images?.logo;
+    }
+
+    return res.json(items);
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const addBrigeItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    return res.json(await BridgeService.generateConnectUrl(req.params.userId));
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const updateBrigeItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    return res.json(
+      await BridgeService.manageConnectUrl({
+        userId: req.params.userId,
+        itemId: req.params.itemId,
+      }),
+    );
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const deleteBrigeItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    return res.json(
+      await BridgeService.deleteUserItem({
+        userId: req.params.userId,
+        itemId: req.params.itemId,
+      }),
+    );
   } catch (e) {
     return next(e);
   }

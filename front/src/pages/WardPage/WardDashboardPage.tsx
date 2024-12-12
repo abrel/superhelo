@@ -12,12 +12,13 @@ import {
 import { selectInputMeasureTypes } from '@@/constants/measure';
 import WardForm, { schema, WardFormType } from '@@/components/Forms/WardForm';
 import DocumentSection from '@@/components/DocumentSection';
-import SectionTitle from '@@/components/SectionTitle';
+import BridgeSection from '@@/components/BridgeSection';
 
 const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
   const { data: ward } = useGetUserQuery(wardId, {
     skip: !wardId,
   });
+
   const { data: photoUrl } = useViewDocumentQuery(ward?.photoDocumentId || '', {
     skip: !ward?.photoDocumentId,
   });
@@ -103,7 +104,7 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
       <div className="m-4">
         <WardForm form={form} isNew={false} />
 
-        <SectionTitle title="Comptes bancaires" className="mt-14 mb-10" />
+        <BridgeSection userId={ward.id} />
 
         <DocumentSection userId={ward.id} />
       </div>

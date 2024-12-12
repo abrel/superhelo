@@ -154,6 +154,7 @@ const userValidationSchema = {
   passwords: Joi.array().items(
     Joi.object({
       label: Joi.string().required(),
+      username: Joi.string().required(),
       value: Joi.string().required(),
     }),
   ),

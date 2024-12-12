@@ -33,4 +33,6 @@ api/.env
 api/.env.production
 api/.sentryclirc
 
+api/volume
+
 

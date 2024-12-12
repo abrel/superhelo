@@ -131,6 +131,7 @@ export const schema = yup
     passwords: yup.array().of(
       yup.object().shape({
         label: yup.string().required(),
+        username: yup.string().required(),
         value: yup.string().required(),
       }),
     ),
@@ -147,8 +148,6 @@ const WardForm: React.FC<{
     watch,
     formState: { errors },
   } = form;
-
-  console.log(errors);
 
   const [photoInput, gender, maritalStatus, measures] = watch([
     'photo',
@@ -831,7 +830,7 @@ const WardForm: React.FC<{
                     </button>
                   </div>
 
-                  <div className="mt-8 grid grid-cols-2 gap-10">
+                  <div className="mt-8 grid grid-cols-3 gap-10">
                     <StandardInput
                       register={register}
                       type="text"
@@ -839,6 +838,14 @@ const WardForm: React.FC<{
                       error={errors.passwords?.[index]?.label}
                       label="Intitulé (*)"
                       placeholder="Intitulé (*)"
+                    />
+                    <StandardInput
+                      register={register}
+                      type="text"
+                      id={`passwords[${index}].username`}
+                      error={errors.passwords?.[index]?.username}
+                      label="Identifiant"
+                      placeholder="Identifiant"
                     />
                     <StandardInput
                       register={register}

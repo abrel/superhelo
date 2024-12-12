@@ -157,4 +157,36 @@ declare namespace SH {
     createdAt?: Date;
     updatedAt?: Date;
   };
+
+  export type BridgeAccount = {
+    id: number;
+    name: string;
+    balance: number;
+    accounting_balance: number;
+    instant_balance: number;
+    updated_at: Date;
+    last_refresh_status: string;
+    type: string;
+    currency_code: string;
+    item_id: number;
+    provider_id: number;
+    data_access: string;
+    pro: boolean;
+    iban: string;
+  };
+
+  export type BridgeItem = {
+    id: number;
+    status: number;
+    status_code_info: string;
+    status_code_description: string;
+    account_types: string;
+    provider_id: number;
+    provider_name: string;
+    provider_logo: string;
+    last_successful_refresh: Date;
+    last_try_refresh: Date;
+    created_at: Date;
+    accounts: SH.BridgeAccount[];
+  };
 }

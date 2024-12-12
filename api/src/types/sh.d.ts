@@ -94,6 +94,7 @@ declare namespace SH {
 
   export type PasswordItem = {
     label: string;
+    username: string;
     value: string;
   };
 
@@ -169,5 +170,80 @@ declare namespace SH {
     title: string;
     data?: string;
     b64Images?: string[];
+  };
+
+  export type BridgeUserAccount = {
+    _id: Types.ObjectId;
+    id: string;
+    userId: Types.ObjectId;
+    uuid: string;
+    accessToken: string;
+    accessTokenExpiresAt: Date;
+
+    createdAt?: Date;
+    updatedAt?: Date;
+
+    save: () => Promise<BridgeUserAccount>;
+    __v?: number;
+  };
+
+  export type BridgeProvider = {
+    id: number;
+    name: string;
+    country_code: string;
+    images: {
+      logo: string;
+    };
+    group_name: string;
+    capabilities: string[];
+    payment_metadata: {
+      release_status: string;
+      nb_max_transactions: number;
+      max_size_label: number;
+      multiple_dates_payments: boolean;
+      sender_iban_available: boolean;
+      provider_environments: string[];
+      execution_status_available: boolean;
+    };
+    aggregation_metadata: { release_status: string };
+    health_status: {
+      single_payment: { status: string };
+      aggregation: { status: string };
+    };
+    tags: { segment: string[] };
+  };
+
+  export type BridgeAccount = {
+    id: number;
+    name: string;
+    balance: number;
+    accounting_balance: number;
+    instant_balance: number;
+    updated_at: Date;
+    last_refresh_status: string;
+    type: string;
+    currency_code: string;
+    item_id: number;
+    provider_id: number;
+    data_access: string;
+    pro: boolean;
+    iban: string;
+  };
+
+  export type BridgeItem = {
+    id: number;
+    status: number;
+    status_code_info: string;
+    status_code_description: string;
+    provider_id: number;
+    account_types: string;
+    last_successful_refresh: Date;
+    last_try_refresh: Date;
+    created_at: Date;
+
+    // Custom fields
+    accounts?: BridgeAccount[];
+    provider_name?: string;
+    provider_logo?: string;
   };
 }

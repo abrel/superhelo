@@ -13,6 +13,10 @@ import {
   patchUser,
   fetchMyWards,
   searchWards,
+  fetchBrigeItems,
+  addBrigeItem,
+  updateBrigeItem,
+  deleteBrigeItem,
 } from '@@/controllers/UserController';
 import {
   singleUploadMiddleware,
@@ -32,6 +36,7 @@ export default function Userouter(_app: Application): Router {
   router.post('/', [
     maybeExtractTokenInfo,
     singleUploadMiddleware,
+    handleBodyEmptyArrays,
     handleUserAvatar,
     createUser,
   ]);
@@ -75,6 +80,11 @@ export default function Userouter(_app: Application): Router {
     renderDocuments,
   ]);
   router.get('/:userId/documents', [fetchUserDocuments, renderDocuments]);
+
+  router.get('/:userId/items', fetchBrigeItems);
+  router.post('/:userId/items', addBrigeItem);
+  router.patch('/:userId/items/:itemId', updateBrigeItem);
+  router.delete('/:userId/items/:itemId', deleteBrigeItem);
 
   return router;
 }

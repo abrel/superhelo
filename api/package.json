@@ -8,7 +8,7 @@
     "dev": "ts-node-dev -r tsconfig-paths/register --files --respawn -- src/index.ts",
     "dist": "rm -rf dist && tsc --project tsconfig.json && tscpaths -p tsconfig.json -s . -o ./dist && yarn sentry:sourcemaps",
     "test": "yarn jest -c jest.config.js --detectOpenHandles",
-    "xx": "ts-node -r tsconfig-paths/register -- src/services/gpt/index.ts",
+    "xx": "ts-node -r tsconfig-paths/register -- src/scripts/index.ts",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org superhelo --project node-express ./dist && sentry-cli sourcemaps upload --org superhelo --project node-express ./dist"
   },
   "dependencies": {

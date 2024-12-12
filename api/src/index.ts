@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import * as Sentry from '@sentry/node';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import WebhookRouter from '@@/routers/WebhookRouter';
 import RootRouter from '@@/routers/RootRouter';
 import AuthRouter from '@@/routers/AuthRouter';
 import UserRouter from '@@/routers/UserRouter';
@@ -15,9 +16,15 @@ const app = express();
 
 app.set('trust proxy', true);
 app.use(cors({ origin: '*' }));
-app.use(bodyParser.json());
+
 app.use(initSH);
 
+app.use('/webhooks', [
+  bodyParser.raw({ type: 'application/json' }),
+  WebhookRouter(app),
+]);
+
+app.use(bodyParser.json());
 app.use('/', RootRouter(app));
 app.use('/auth', AuthRouter(app));
 app.use('/users', UserRouter(app));

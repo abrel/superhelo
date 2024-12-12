@@ -20,7 +20,8 @@ const NewWardPage: React.FC = () => {
     (data: WardFormType) => {
       createWard({
         ...data,
-        gender: data.gender.id,
+        gender: data.gender?.id,
+        maritalStatus: data.maritalStatus?.id,
         photo: data.photo?.length ? data.photo[0] : undefined,
       });
     },
