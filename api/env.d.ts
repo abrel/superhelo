@@ -17,6 +17,7 @@ declare global {
       S3_BUCKET: string;
       BRIDGE_CLIENT_ID: string;
       BRIDGE_CLIENT_SECRET: string;
+      BRIDGE_WEBHOOK_SECRET: string;
     }
   }
 }

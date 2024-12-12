@@ -289,8 +289,6 @@ export const extractIntelsFromDocuementsForUser = async (userId: string) => {
     formatInstructions: outputParser.getFormatInstructions(),
   });
 
-  console.dir(response, { depth: null });
-
   if (response?.measures) {
     for (const measure of response?.measures) {
       if (!measure.endDate && measure.duration) {
@@ -310,14 +308,5 @@ export const extractIntelsFromDocuementsForUser = async (userId: string) => {
     }
   }
 
-  console.dir(payload, { depth: null });
-
   await UserRepository.updateUserById(userId, payload);
 };
-
-const main = async () => {
-  await extractIntelsFromDocuementsForUser('67483607f37ff9e91fc70390');
-  process.exit(0);
-};
-
-main();
