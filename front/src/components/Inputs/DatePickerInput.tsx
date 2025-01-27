@@ -27,13 +27,17 @@ const DatePickerInput: React.FC<{
   placeholder = 'jj/mm/aaaa',
   minDate,
   maxDate,
-  inputClassName = 'peer block w-full ring-1 ring-gray-200 shadow-sm py-3 px-4 border-main rounded-md placeholder-transparent font-main text-main text-sm',
-  labelClassName = 'absolute pointer-events-none font-main text-main text-sm -top-7 left-0 transition-all peer-focus:-top-6 peer-focus:left-0 peer-focus:text-sm peer-placeholder-shown:top-3 peer-placeholder-shown:left-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:italic',
+  inputClassName = 'peer block w-full ring-1 ring-gray-200 shadow-sm py-3 px-4 border-main rounded-md font-main text-main text-sm',
+  labelClassName = 'absolute pointer-events-none font-main text-main text-sm -top-7 left-0 transition-all peer-focus:-top-6 peer-focus:left-0 peer-focus:text-sm',
 }) => {
-  const errorComponent = error?.message && (
-    <p className="flex italic font-main text-sm text-red-500 m-1">
-      {error.message}
-    </p>
+  const errorComponent = useMemo(
+    () =>
+      error?.message && (
+        <p className="flex italic font-main text-sm text-red-500 m-1">
+          {error.message}
+        </p>
+      ),
+    [error?.message],
   );
 
   const dateFormat = useMemo(() => {
@@ -61,7 +65,9 @@ const DatePickerInput: React.FC<{
               showTimeSelectOnly={!!showTimeSelectOnly}
               className={inputClassName}
               placeholderText={placeholder}
-              onChange={(date) => field.onChange(date)}
+              onChange={(date) => {
+                field.onChange(date);
+              }}
               selected={value}
               locale={fr}
               dateFormat={dateFormat}

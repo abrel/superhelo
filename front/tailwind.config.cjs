@@ -8,7 +8,7 @@ module.exports = {
         logialBlue: '#007bc2',
       },
       fontFamily: {
-        main: ['Comfortaa'],
+        main: ['system-ui'],
       },
       gridTemplateColumns: {
         menu: '200px 1fr 250px',

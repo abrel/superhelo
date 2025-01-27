@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Select from 'react-select';
 import { FieldError, Controller } from 'react-hook-form';
 
@@ -28,8 +28,14 @@ const MultiSelectInput: React.FC<{
   placeholder = 'Sélectionnez...',
   isMulti = true,
 }) => {
-  const errorComponent = error?.message && (
-    <p className="italic font-main text-sm text-red-500 m-1">{error.message}</p>
+  const errorComponent = useMemo(
+    () =>
+      error?.message && (
+        <p className="italic font-main text-sm text-red-500 m-1">
+          {error.message}
+        </p>
+      ),
+    [error?.message],
   );
 
   return (

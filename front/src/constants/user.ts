@@ -4,6 +4,19 @@ export enum Roles {
   WARD = 'ward',
 }
 
+export const translateRole = (role: string) => {
+  switch (role) {
+    case Roles.ADMIN:
+      return 'Administrateur';
+    case Roles.GUARDIAN:
+      return 'Tuteur';
+    case Roles.WARD:
+      return 'Protégé';
+    default:
+      return role;
+  }
+};
+
 export enum Genders {
   M = 'male',
   F = 'female',

@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import cx from 'classnames';
 import toast from 'react-hot-toast';
 import omit from 'lodash.omit';
 import { useForm } from 'react-hook-form';
@@ -10,11 +12,72 @@ import {
   selectInputMaritalStatuses,
 } from '@@/constants/user';
 import { selectInputMeasureTypes } from '@@/constants/measure';
+import { BsArrowLeft } from 'react-icons/bs';
 import WardForm, { schema, WardFormType } from '@@/components/Forms/WardForm';
+import MeasureForm from '@@/components/Forms/MeasureForm';
+import PasswordForm from '@@/components/Forms/PasswordForm';
+import InventoryForm from '@@/components/Forms/InventoryForm';
 import DocumentSection from '@@/components/DocumentSection';
 import BridgeSection from '@@/components/BridgeSection';
 
+enum Tabs {
+  INFO = 'info',
+  MEASURES = 'mesures',
+  FINANCE = 'finance',
+  INVENTORY = 'inventaire',
+  PASWWORDS = 'passwords',
+  DOCUMENTS = 'documents',
+}
+
+const translateTab = (tab: string) => {
+  switch (tab) {
+    case Tabs.INFO:
+      return 'Informations';
+    case Tabs.MEASURES:
+      return 'Mesures';
+    case Tabs.FINANCE:
+      return 'Finance';
+    case Tabs.INVENTORY:
+      return 'Inventaire';
+    case Tabs.PASWWORDS:
+      return 'Mots de passe';
+    case Tabs.DOCUMENTS:
+      return 'Documents';
+
+    default:
+      return tab;
+  }
+};
+
+const Tab: React.FC<{
+  id: string;
+  title: string;
+  isActive: boolean;
+  cb: Function;
+}> = ({ id, isActive, title, cb }) => {
+  return (
+    <button
+      id={id}
+      onClick={() => {
+        cb(id);
+        window.location.hash = id;
+      }}
+    >
+      <span
+        className={cx(
+          'font-semibold text-sm',
+          isActive ? 'text-sky-500' : 'text-slate-700',
+        )}
+      >
+        {title}
+      </span>
+    </button>
+  );
+};
+
 const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(Tabs.INFO);
   const { data: ward } = useGetUserQuery(wardId, {
     skip: !wardId,
   });
@@ -34,8 +97,8 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
     (data: Partial<WardFormType>) => {
       patchUser({
         ...data,
-        gender: data.gender.id,
-        maritalStatus: data.maritalStatus.id,
+        gender: data.gender?.id,
+        maritalStatus: data.maritalStatus?.id,
         measures: data.measures?.map((m: any) => ({
           ...m,
           type: m.type.id,
@@ -84,29 +147,67 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
     }
   }, [ward, form.reset, photoUrl]);
 
+  useEffect(() => {
+    if (location?.hash) {
+      setActiveTab(location.hash.replace('#', '') as Tabs);
+    }
+  }, [location?.hash, setActiveTab]);
+
+  const content = () => {
+    switch (activeTab) {
+      case Tabs.INFO:
+        return <WardForm form={form} isNew={false} />;
+      case Tabs.INVENTORY:
+        return <InventoryForm form={form} />;
+      case Tabs.MEASURES:
+        return <MeasureForm form={form} />;
+      case Tabs.FINANCE:
+        return <BridgeSection userId={wardId} />;
+      case Tabs.PASWWORDS:
+        return <PasswordForm form={form} />;
+      case Tabs.DOCUMENTS:
+        return <DocumentSection userId={wardId} />;
+    }
+  };
+
   if (!ward) {
     return null;
   }
 
   return (
-    <div>
-      <div className="z-10 right-6 top-12 fixed">
-        <button
-          type="button"
-          onClick={form.handleSubmit(onSubmit)}
-          disabled={form.formState.isSubmitting}
-          className="my-6 bg-cyan-400 rounded-lg p-2"
-        >
-          <span className="text-white ml-1">Valider</span>
-        </button>
-      </div>
+    <div className="w-full p-4">
+      {![Tabs.FINANCE, Tabs.DOCUMENTS].includes(activeTab) && (
+        <div className="z-10 right-6 top-12 fixed">
+          <button
+            type="button"
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={form.formState.isSubmitting}
+            className="my-6 bg-cyan-400 rounded-lg p-2"
+          >
+            <span className="text-white ml-1">Valider</span>
+          </button>
+        </div>
+      )}
 
-      <div className="m-4">
-        <WardForm form={form} isNew={false} />
-
-        <BridgeSection userId={ward.id} />
-
-        <DocumentSection userId={ward.id} />
+      <div className="p-4">
+        <Link to={'/wards'}>
+          <BsArrowLeft size={20} className="mb-1" />
+        </Link>
+        <h2 className="text-slate-700 text-lg font-semibold">
+          {ward.firstName} {ward.lastName}
+        </h2>
+        <div className="flex flex-row items-center space-x-6 border-b border-slate-200 pb-2 mt-4">
+          {Object.values(Tabs).map((tab) => (
+            <Tab
+              key={tab}
+              id={tab}
+              title={translateTab(tab)}
+              isActive={activeTab === tab}
+              cb={setActiveTab}
+            />
+          ))}
+        </div>
+        {content()}
       </div>
     </div>
   );

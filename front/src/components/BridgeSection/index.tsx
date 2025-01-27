@@ -5,9 +5,9 @@ import {
   useCreateBridgeConnectionUrlMutation,
   useUpdateBridgeConnectionUrlMutation,
   useDeleteBridgeItemMutation,
-} from '@@/services/user';
-import SectionTitle from '@@/components/SectionTitle';
-import AccountItemCard from '@@/components/Cards/AccountItemCard';
+} from '@@/services/bridge';
+import { IoWarningOutline } from 'react-icons/io5';
+import AccountCard from '@@/components/Cards/AccountCard';
 import Status from '@@/components/BridgeSection/Status';
 import StatusBadge from '@@/components/BridgeSection/StatusBadge';
 import { LuRefreshCcw, LuDelete } from 'react-icons/lu';
@@ -55,8 +55,7 @@ const BridgeSection: React.FC<{ userId: string }> = ({ userId }) => {
   }, [isSuccess]);
 
   return (
-    <div>
-      <SectionTitle title="Comptes bancaires" className="mt-14 mb-4" />
+    <div className="mt-4">
       <button
         className="bg-sky-600 rounded-lg py-2 px-3 hover:bg-sky-700 flex ml-auto mb-2"
         onClick={onRegisterAccount}
@@ -64,7 +63,15 @@ const BridgeSection: React.FC<{ userId: string }> = ({ userId }) => {
         <span className="text-white ml-1">+ Nouveau compte</span>
       </button>
 
-      {!!items &&
+      {!items?.length && (
+        <p className="font-main text-main flex flex-row items-center justify-center">
+          <IoWarningOutline size={24} />
+          <span className="mx-1">Aucun compte connecté</span>
+          <IoWarningOutline size={24} />
+        </p>
+      )}
+
+      {!!items?.length &&
         items.map((item) => {
           return (
             <div key={item.id} className="mb-6">
@@ -89,7 +96,7 @@ const BridgeSection: React.FC<{ userId: string }> = ({ userId }) => {
               <Status item={item} />
               <div className="flex flex-row flex-wrap">
                 {item.accounts.map((account) => (
-                  <AccountItemCard key={account.id} account={account} />
+                  <AccountCard key={account.id} account={account} />
                 ))}
               </div>
             </div>

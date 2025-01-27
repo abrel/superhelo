@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import omit from 'lodash.omit';
 import { createToken, createRefreshToken, tokenTTL } from '@@/services/jwt';
 import * as UserRepository from '@@/services/mongo/repositories/User';
+import * as BridgeTransactionRepository from '@@/services/mongo/repositories/BridgeTransaction';
 import BridgeService from '@@/services/bridge';
 import validator from '@@/validation/validator';
 import {
@@ -278,6 +279,23 @@ export const deleteBrigeItem = async (
       await BridgeService.deleteUserItem({
         userId: req.params.userId,
         itemId: req.params.itemId,
+      }),
+    );
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const fetchAccountTransactions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    return res.json(
+      await BridgeTransactionRepository.findBridgeTransactionsBy({
+        userId: req.params.userId,
+        account_id: req.params.accountId,
       }),
     );
   } catch (e) {

@@ -246,4 +246,72 @@ declare namespace SH {
     provider_name?: string;
     provider_logo?: string;
   };
+
+  export type BridgeTransaction = {
+    id: number;
+    clean_description: string;
+    provider_description: string;
+    amount: number;
+    date: string;
+    booking_date: string;
+    transaction_date: string;
+    value_date: string;
+    updated_at: Date;
+    currency_code: string;
+    deleted: boolean;
+    category_id: number;
+    operation_type: string;
+    account_id: number;
+    future: boolean;
+  };
+
+  export type BridgeMongoTransaction = {
+    _id: Types.ObjectId;
+    id: string;
+    userId: Types.ObjectId;
+
+    transaction_id: string;
+    clean_description: string;
+    provider_description: string;
+    amount: number;
+    date: string;
+    booking_date?: string;
+    transaction_date?: string;
+    value_date?: string;
+    updated_at: Date;
+    currency_code: string;
+    deleted: boolean;
+    category_id: number;
+    category_name?: string;
+    subcategory_name?: string;
+    operation_type?: string;
+    account_id: string;
+    future: boolean;
+
+    createdAt?: Date;
+    updatedAt?: Date;
+
+    save: () => Promise<BridgeMongoTransaction>;
+    __v?: number;
+  };
+
+  export type BridgeStock = {
+    id: number;
+    account_id: number;
+
+    label: string;
+    ticker: string;
+    marketplace: string | null;
+    isin: string;
+    stock_key: string;
+    current_price: number;
+    currency_code: string;
+    quantity: number;
+    total_value: number;
+    average_purchase_price: number;
+    value_date: string;
+    deleted: boolean;
+    created_at: Date;
+    updated_at: Date;
+  };
 }

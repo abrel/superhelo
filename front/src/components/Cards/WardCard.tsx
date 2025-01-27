@@ -7,7 +7,7 @@ const WardCard: React.FC<{ ward: SH.User }> = ({ ward }) => {
   return (
     <Link
       to={`/wards/${ward.id}`}
-      className="relative m-2 p-4 rounded-lg border flex flex-row items-center w-fit"
+      className="relative mr-2 mb-2 p-4 rounded-lg border flex flex-row items-center w-fit"
     >
       <AuthenticatedImage
         documentId={ward.photoDocumentId}

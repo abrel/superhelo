@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FieldError, Controller } from 'react-hook-form';
 import PI, { PhoneInputProps } from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -11,8 +11,14 @@ const PhonePickerInput: React.FC<{
   error?: FieldError;
   label?: string;
 }> = ({ control, id, error, label }) => {
-  const errorComponent = error?.message && (
-    <p className="italic font-main text-sm text-red-500 m-1">{error.message}</p>
+  const errorComponent = useMemo(
+    () =>
+      error?.message && (
+        <p className="italic font-main text-sm text-red-500 m-1">
+          {error.message}
+        </p>
+      ),
+    [error?.message],
   );
 
   return (
@@ -25,6 +31,9 @@ const PhonePickerInput: React.FC<{
         render={({ field }: { field: any }) => (
           <ReactPhoneInput
             {...field}
+            onChange={(value) => {
+              field.onChange(value.replace(/^330/, '33'));
+            }}
             country={'fr'}
             countryCodeEditable={false}
             inputStyle={{

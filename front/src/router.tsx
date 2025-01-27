@@ -12,6 +12,8 @@ import WardsPage from '@@/pages/WardsPage';
 import WardPage from '@@/pages/WardPage';
 import MePage from '@@/pages/MePage';
 import CalendarPage from '@@/pages/CalendarPage';
+import ConversationPage from '@@/pages/ConversationPage';
+import AccountPage from '@@/pages/AccountPage';
 
 const router = createBrowserRouter([
   {
@@ -52,12 +54,21 @@ const router = createBrowserRouter([
             path: ':wardId',
             element: <WardPage />,
           },
+          {
+            path: ':wardId/accounts/:accountId',
+            element: <AccountPage />,
+          },
         ],
       },
       {
         path: '/calendar',
         element: <PrivateRoute />,
         children: [{ index: true, element: <CalendarPage /> }],
+      },
+      {
+        path: '/conversations',
+        element: <PrivateRoute />,
+        children: [{ index: true, element: <ConversationPage /> }],
       },
       {
         path: '/me',

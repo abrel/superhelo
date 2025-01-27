@@ -42,7 +42,7 @@ const NewWardPage: React.FC = () => {
   }, [isSuccess, ward]);
 
   return (
-    <div>
+    <div className="w-full p-4">
       <div className="z-10 right-6 top-12 fixed">
         <button
           type="button"

@@ -64,7 +64,7 @@ const DashboardPage: React.FC = () => {
     }
 
     return (
-      <div className="mt-8">
+      <div className="mt-8 flex flex-row flex-wrap">
         {selectedWards?.map((ward) => (
           <WardCard key={ward._id} ward={ward} />
         ))}
@@ -73,7 +73,7 @@ const DashboardPage: React.FC = () => {
   }, [selectedWards, wardsAreLoading]);
 
   return (
-    <div className="w-full m-4 mt-8">
+    <div className="w-full p-4">
       <div className="flex flex-row justify-between items-center">
         <div className="w-96">
           <StandardInput

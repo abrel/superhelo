@@ -132,7 +132,7 @@ const MePage: React.FC = () => {
   }, [me?.id, signature, setSignature]);
 
   return (
-    <div className="relative m-4 mt-10 w-full">
+    <div className="relative p-4 mt-6 w-full">
       <div className="fixed z-10 right-6">{button}</div>
 
       <form className="grid grid-cols-3 gap-12">

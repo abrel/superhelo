@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { RootState } from '@@/store';
-import NavBar from '@@/components/NavBarLogged';
-import SideBar from '@@/components/SideBar';
+import Sidebar from '@@/components/Sidebar';
 
 const PrivateRoute: React.FC = () => {
-  const location = useLocation();
   const auth = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
@@ -16,16 +14,11 @@ const PrivateRoute: React.FC = () => {
     }
   }, [auth.accessToken, navigate]);
 
-  if (location.pathname.includes('/c.us/')) {
-    return <Outlet />;
-  }
-
   return (
-    <div className="flex flex-col">
-      <NavBar />
-      <div className="flex flex-col flex-grow pt-16 bg-slate-50 w-full">
-        <div className="flex flex-row min-h-screen">
-          <SideBar />
+    <div className="flex flex-col flex-grow bg-slate-50 w-full">
+      <div className="flex flex-row min-h-screen">
+        <Sidebar />
+        <div className="w-[calc(100%-190px)]">
           <Outlet />
         </div>
       </div>

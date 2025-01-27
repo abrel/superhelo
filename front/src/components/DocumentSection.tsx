@@ -208,8 +208,7 @@ const DocumentSection: React.FC<{ userId: string }> = ({ userId }) => {
   }, [documents]);
 
   return (
-    <div>
-      <SectionTitle title="Documents" className="mt-12 mb-6" />
+    <div className="mt-4">
       <div className="flex flex-col space-y-4 my-4">
         {sections?.map((section) => {
           if (!section.documents.length) {

@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/node';
 import UserSchema from '@@/services/mongo/schemas/User';
 import DocumentSchema from '@@/services/mongo/schemas/Document';
 import BridgeAccountSchema from '@@/services/mongo/schemas/BridgeAccount';
+import BridgeTransactionSchema from '@@/services/mongo/schemas/BridgeTransaction';
 
 class MongoManager {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +29,10 @@ class MongoManager {
     this.models.BridgeAccount = shDB.model<SH.BridgeUserAccount>(
       'BridgeAccount',
       BridgeAccountSchema,
+    );
+    this.models.BridgeTransaction = shDB.model<SH.BridgeMongoTransaction>(
+      'BridgeTransaction',
+      BridgeTransactionSchema,
     );
 
     mongoose.connection.on('error', (e: Error) => {

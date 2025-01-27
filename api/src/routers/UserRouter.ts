@@ -17,6 +17,7 @@ import {
   addBrigeItem,
   updateBrigeItem,
   deleteBrigeItem,
+  fetchAccountTransactions,
 } from '@@/controllers/UserController';
 import {
   singleUploadMiddleware,
@@ -85,6 +86,11 @@ export default function Userouter(_app: Application): Router {
   router.post('/:userId/items', addBrigeItem);
   router.patch('/:userId/items/:itemId', updateBrigeItem);
   router.delete('/:userId/items/:itemId', deleteBrigeItem);
+
+  router.get(
+    '/:userId/accounts/:accountId/transactions',
+    fetchAccountTransactions,
+  );
 
   return router;
 }

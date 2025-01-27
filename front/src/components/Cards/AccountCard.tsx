@@ -1,15 +1,21 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import cx from 'classnames';
 import { translateAccountType, getAccountColor } from '@@/constants/bridge';
 import { formatCurrency } from '@@/utils/intl';
 import { formatIban } from '@@/utils/iban';
 
-const AccountItemCard: React.FC<{
+const AccountCard: React.FC<{
   account: SH.BridgeAccount;
 }> = ({ account }) => {
+  const { wardId } = useParams<{ wardId: string }>();
   return (
-    <div className="relative m-2 ml-0 mt-0 p-3 rounded-lg border w-fit">
+    <Link
+      className="relative m-2 ml-0 mt-0 p-3 rounded-lg border w-fit"
+      to={`/wards/${wardId}/accounts/${account.id}`}
+    >
       <div className="flex flex-row items-start justify-between border-b border-slate-200 pb-2">
         <div>
           <p className="text-lg">{account.name}</p>
@@ -20,7 +26,7 @@ const AccountItemCard: React.FC<{
 
         <span
           className={cx(
-            'text-white rounded-lg py-1 px-2 text-xs',
+            'text-white rounded-lg py-1 px-2 text-xs ml-2',
             getAccountColor(account.type),
           )}
         >
@@ -43,8 +49,8 @@ const AccountItemCard: React.FC<{
           <p className="text-xs">IBAN: {formatIban(account.iban)}</p>
         )}
       </div>
-    </div>
+    </Link>
   );
 };
 
-export default AccountItemCard;
+export default AccountCard;

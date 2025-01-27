@@ -2,6 +2,7 @@ const { Roles, Genders, MaritalStatuses } = require('@@/constants/user');
 const { DocumentTypes } = require('@@constants/document');
 
 declare namespace SH {
+  export type MultiSelectOption = { id: string; label: string };
   export type SigninInput = {
     email: string;
     password: string;
@@ -14,14 +15,14 @@ declare namespace SH {
   };
 
   export type Court = {
-    name: string;
-    service: string;
-    address: string;
-    postcode: string;
-    city: string;
-    country: string;
-    phone: string;
-    fax: string;
+    name?: string;
+    service?: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    phone?: string;
+    fax?: string;
   };
 
   export type Attendee = {
@@ -37,11 +38,11 @@ declare namespace SH {
 
   export type Measure = {
     type: MeasureTypes;
-    motive: string;
+    motive?: string;
     startDate: Date;
     endDate?: Date;
-    judgment: Judgment;
-    documentIds?: Types.ObjectId[];
+    judgment?: Judgment;
+    documentIds?: string[];
   };
 
   export type Deduction = {
@@ -62,13 +63,13 @@ declare namespace SH {
     saleDate?: Date;
     deductions: Deduction[];
 
-    documentIds?: Types.ObjectId[];
+    documentIds?: string[];
   };
 
   export type PersonalProperty = {
     label: string;
     value: number;
-    documentIds?: Types.ObjectId[];
+    documentIds?: stirng[];
   };
 
   export type ScheduleItem = {
@@ -81,7 +82,7 @@ declare namespace SH {
     label: string;
     amount: number;
     schedule: ScheduleItem[];
-    documentIds?: Types.ObjectId[];
+    documentIds?: string[];
   };
 
   export type Contact = {
@@ -93,6 +94,7 @@ declare namespace SH {
 
   export type PasswordItem = {
     label: string;
+    username: string;
     value: string;
   };
 
@@ -111,8 +113,6 @@ declare namespace SH {
     guardianId?: string;
 
     gender?: Genders;
-    email?: string;
-    phone?: string;
     nationality?: string;
     address?: string;
     city?: string;
@@ -188,5 +188,32 @@ declare namespace SH {
     last_try_refresh: Date;
     created_at: Date;
     accounts: SH.BridgeAccount[];
+  };
+
+  export type BridgeMongoTransaction = {
+    _id: string;
+    id: string;
+    userId: string;
+
+    transaction_id: string;
+    clean_description: string;
+    provider_description: string;
+    amount: number;
+    date: string;
+    booking_date?: string;
+    transaction_date?: string;
+    value_date?: string;
+    updated_at: Date;
+    currency_code: string;
+    deleted: boolean;
+    category_id: number;
+    category_name?: string;
+    subcategory_name?: string;
+    operation_type?: string;
+    account_id: string;
+    future: boolean;
+
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 }

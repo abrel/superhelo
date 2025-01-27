@@ -1,6 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
+import Promise from 'bluebird';
 import * as BridgeAccountRepository from '@@/services/mongo/repositories/BridgeAccount';
+import * as BridgeTransactionRepository from '@@/services/mongo/repositories/BridgeTransaction';
 import * as UserRepository from '@@/services/mongo/repositories/User';
+import categories from '@@/constants/categories';
 
 class BridgeService {
   instance: AxiosInstance;
@@ -50,6 +53,22 @@ class BridgeService {
     return providers;
   };
 
+  listCategories = async () => {
+    let categories: any[] = [];
+    let url = '/categories';
+
+    while (url) {
+      const { data } = await this.aggregationInstance({
+        method: 'GET',
+        url,
+      });
+      categories = categories.concat(data.resources);
+      url = data.pagination?.next_uri;
+    }
+
+    return categories;
+  };
+
   createUser = async (externalUserId: string) => {
     const { data } = await this.aggregationInstance({
       method: 'POST',
@@ -81,7 +100,7 @@ class BridgeService {
 
     if (!account) {
       try {
-        const user = await this.createUser(userId);
+        await this.createUser(userId);
       } catch (e) {
         // account may already exist
       }
@@ -128,7 +147,7 @@ class BridgeService {
         user_email: user.email,
         country_code: 'FR',
         account_types: 'all',
-        callback_url: `https://app.superhelo.fr/wards/${userId}`,
+        callback_url: `https://app.superhelo.fr/wards/${userId}#finance`,
       },
       headers: {
         Authorization: `Bearer ${token}`,
@@ -152,7 +171,7 @@ class BridgeService {
       data: {
         item_id: Number(itemId),
         account_types: 'all',
-        callback_url: `https://app.superhelo.fr/wards/${userId}`,
+        callback_url: `https://app.superhelo.fr/wards/${userId}#finance`,
       },
       headers: {
         Authorization: `Bearer ${token}`,
@@ -225,34 +244,90 @@ class BridgeService {
     return resources;
   };
 
-  // does not work due to permissions
-  verifyAccountInformation = async (userId: string) => {
+  retrieveTransactions = async (
+    userId: string,
+    params: { since?: Date; limit?: number },
+  ) => {
+    let resources: SH.BridgeTransaction[] = [];
+    let url = '/transactions';
+
     const token = await this.findOrCreateToken(userId);
-    const { data } = await this.aggregationInstance({
-      method: 'GET',
-      url: '/accounts-information',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return data;
+
+    while (url) {
+      const { data } = await this.aggregationInstance({
+        method: 'GET',
+        url,
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      resources = resources.concat(data.resources);
+      url = data.pagination.next_uri;
+    }
+
+    return resources;
   };
 
-  retrieveTransactions = async (userId: string) => {
-    const token = await this.findOrCreateToken(userId);
-    const { data } = await this.aggregationInstance({
-      method: 'GET',
-      url: '/transactions',
-      params: {
-        since: '2024-12-21T18:44:09.523Z',
-        limit: 50,
-      },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  syncTransactionsForUserId = async (userId: string) => {
+    const transactions = await this.retrieveTransactions(userId, {
+      limit: 500,
     });
 
-    return data;
+    await Promise.map(
+      transactions,
+      async ({ id, account_id, ...transaction }) => {
+        const category = categories.find(
+          (c) => c.subcategoryId === transaction.category_id,
+        );
+        return BridgeTransactionRepository.CreateOrUpdateBridgeTransaction({
+          userId,
+          transaction_id: String(id),
+          account_id: String(account_id),
+          category_name: category?.categoryName,
+          subcategory_name: category?.subcategoryName,
+          ...transaction,
+        });
+      },
+      { concurrency: 10 },
+    );
+  };
+
+  syncTransactions = async () => {
+    const accounts = await BridgeAccountRepository.findAllBridgeAccountsBy({});
+    for (const account of accounts) {
+      await this.syncTransactionsForUserId(account.userId);
+    }
+  };
+
+  retrieveStocks = async ({
+    userId,
+    accountId,
+  }: {
+    userId: string;
+    accountId: number;
+  }) => {
+    let resources: SH.BridgeStock[] = [];
+    let url = '/stocks';
+
+    const token = await this.findOrCreateToken(userId);
+
+    while (url) {
+      const { data } = await this.aggregationInstance({
+        method: 'GET',
+        url,
+        params: {
+          account_id: accountId,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      resources = resources.concat(data.resources);
+      url = data.pagination.next_uri;
+    }
+
+    return resources;
   };
 
   initiateTransfer = async (userId: string) => {

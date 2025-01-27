@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { FieldError } from 'react-hook-form';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
@@ -25,8 +25,9 @@ const StandardInput: React.FC<{
   labelClassName = 'absolute pointer-events-none font-main text-main text-sm -top-7 left-0 transition-all peer-focus:-top-6 peer-focus:left-0 peer-focus:text-sm peer-placeholder-shown:top-3 peer-placeholder-shown:left-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:italic',
   errorClassName = 'italic font-main text-sm text-red-500 m-1',
 }) => {
-  const errorComponent = error?.message && (
-    <p className={errorClassName}>{error.message}</p>
+  const errorComponent = useMemo(
+    () => error?.message && <p className={errorClassName}>{error.message}</p>,
+    [error?.message],
   );
 
   const [showPassword, setShowPassword] = useState(false);
