@@ -65,22 +65,22 @@ variable "api_url" {
   default     = "api.superhelo.fr"
 }
 
-#variable "cron_name" {
-#  default = "cron"
-#}
-#
-#variable "cron_repository_name" {
-#  description = "ECR repository name"
-#  default     = "cron"
-#}
-#
-#variable "fargate_cpu_cron" {
-#  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-#  default     = 512
-#}
-#
-#variable "fargate_memory_cron" {
-#  description = "Fargate instance memory to provision (in MiB)"
-#  default     = 1024
-#}
+variable "cron_name" {
+  default = "cron"
+}
+
+variable "cron_repository_name" {
+  description = "ECR repository name"
+  default     = "cron"
+}
+
+variable "fargate_cpu_cron" {
+  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
+  default     = 512
+}
+
+variable "fargate_memory_cron" {
+  description = "Fargate instance memory to provision (in MiB)"
+  default     = 1024
+}
 

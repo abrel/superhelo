@@ -12,8 +12,8 @@
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org superhelo --project node-express ./dist && sentry-cli sourcemaps upload --org superhelo --project node-express ./dist"
   },
   "dependencies": {
-    "@langchain/core": "^0.3.22",
-    "@langchain/openai": "^0.3.14",
+    "@langchain/core": "^0.3.40",
+    "@langchain/openai": "^0.4.4",
     "@sentry/cli": "^2.38.2",
     "@sentry/node": "^8.38.0",
     "@sentry/profiling-node": "^8.38.0",
@@ -28,7 +28,6 @@
     "fast-csv": "^5.0.1",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
-    "langchain": "^0.3.6",
     "lodash.omit": "^4.5.0",
     "mammoth": "^1.8.0",
     "moment-timezone": "^0.5.46",

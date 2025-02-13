@@ -1,10 +1,10 @@
 import '@@/config';
-import BridgeService from '@@/services/bridge';
-//import * as BridgeAccountRepository from '@@/services/mongo/repositories/BridgeAccount';
-//import * as UserRepository from '@@/services/mongo/repositories/User';
+// import BridgeService from '@@/services/bridge';
+// import { extractIntelsFromDocumentsForUser } from '@@/services/gpt';
 
 const main = async () => {
-  await BridgeService.syncTransactions();
+  // await BridgeService.syncTransactions();
+  // await extractIntelsFromDocumentsForUser('67483607f37ff9e91fc70390');
 
   process.exit(0);
 };

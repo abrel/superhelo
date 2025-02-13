@@ -3,28 +3,15 @@ import moment from 'moment';
 import { z } from 'zod';
 import Promise from 'bluebird';
 import { ChatOpenAI } from '@langchain/openai';
-import { StructuredOutputParser } from 'langchain/output_parsers';
 import { HumanMessage } from '@langchain/core/messages';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
+
 import * as DocumentRepository from '@@/services/mongo/repositories/Document';
 import * as UserRepository from '@@/services/mongo/repositories/User';
 import { modelName, user, temperature } from '@@/constants/gpt';
 import { Genders, MaritalStatuses } from '@@/constants/user';
 import { MeasureTypes } from '@@/constants/measure';
 import { getDocumentContent } from '@@/utils/document';
-
-const chatModel = new ChatOpenAI({
-  modelName,
-  temperature,
-  user,
-});
-
-const prompt = `
-    Tu es mandataire responsable d'une personne sous mesure de protection juridique.
-    Tu es chargé d'extraire les informations qui lui sont relatives via les documents qui te sont transmis.
-   
-    {formatInstructions}
-`;
 
 const MeasureSchema = z.object({
   type: z
@@ -153,98 +140,102 @@ const DebtSchema = z.object({
     .describe('Calendrier des échéances pour la dette.'),
 });
 
-const outputParser = StructuredOutputParser.fromZodSchema(
-  z.object({
-    gender: z
-      .nativeEnum(Genders)
-      .optional()
-      .describe("Genre de l'utilisateur."),
-    nationality: z
-      .string()
-      .optional()
-      .describe('Nationalité de la personne protégée.'),
-    address: z
-      .string()
-      .optional()
-      .describe('Adresse complète de la personne protégée.'),
-    city: z
-      .string()
-      .optional()
-      .describe('Ville de résidence de la personne protégée.'),
-    postcode: z
-      .string()
-      .optional()
-      .describe('Code postal de la personne protégée.'),
-    country: z
-      .string()
-      .optional()
-      .describe('Pays de résidence de la personne protégée.'),
-    birthDate: z
-      .string()
-      .optional()
-      .describe(
-        'Date de naissance de la personne protégé au format DD/MM/YYYY.',
-      ),
-    cityOfBirth: z
-      .string()
-      .optional()
-      .describe('Ville de naissance de la personne protégée.'),
-    nationalInsuranceNumber: z
-      .string()
-      .optional()
-      .describe('Numéro de sécurité sociale de la personne protégée.'),
-    taxIndentificationNumber: z
-      .string()
-      .optional()
-      .describe("Numéro d'identification fiscale de la personne protégée."),
-    gir: z
-      .string()
-      .optional()
-      .describe('GIR (Groupe Iso-Ressources) de la personne protégée'),
-    alone: z
-      .boolean()
-      .optional()
-      .describe('Indique si la personne protégée vit seul.'),
-    pets: z
-      .boolean()
-      .optional()
-      .describe('Indique si la personne protégée possède des animaux.'),
-    religion: z
-      .string()
-      .optional()
-      .describe('Religion de la personne protégée.'),
-    maritalStatus: z
-      .nativeEnum(MaritalStatuses)
-      .optional()
-      .describe('Statut marital de la personne protégée.'),
-    children: z
-      .number()
-      .optional()
-      .describe("Nombre d'enfants de la personne protégée."),
-    measures: z
-      .array(MeasureSchema)
-      .optional()
-      .describe(
-        'Liste des mesures de protection associées à la personne protégée.',
-      ),
-    realEstateProperties: z
-      .array(RealEstatePropertySchema)
-      .optional()
-      .describe('Liste des biens immobiliers de la personne protégée.'),
-    personalProperties: z
-      .array(PersonalPropertySchema)
-      .optional()
-      .describe('Liste des biens personnels de la personne protégée.'),
-    debts: z
-      .array(DebtSchema)
-      .optional()
-      .describe('Liste des dettes de la personne protégée.'),
-  }),
-);
+const outputParser = z.object({
+  gender: z.nativeEnum(Genders).optional().describe("Genre de l'utilisateur."),
+  nationality: z
+    .string()
+    .optional()
+    .describe('Nationalité de la personne protégée.'),
+  address: z
+    .string()
+    .optional()
+    .describe('Adresse complète de la personne protégée.'),
+  city: z
+    .string()
+    .optional()
+    .describe('Ville de résidence de la personne protégée.'),
+  postcode: z
+    .string()
+    .optional()
+    .describe('Code postal de la personne protégée.'),
+  country: z
+    .string()
+    .optional()
+    .describe('Pays de résidence de la personne protégée.'),
+  birthDate: z
+    .string()
+    .optional()
+    .describe('Date de naissance de la personne protégé au format DD/MM/YYYY.'),
+  cityOfBirth: z
+    .string()
+    .optional()
+    .describe('Ville de naissance de la personne protégée.'),
+  nationalInsuranceNumber: z
+    .string()
+    .optional()
+    .describe('Numéro de sécurité sociale de la personne protégée.'),
+  taxIndentificationNumber: z
+    .string()
+    .optional()
+    .describe("Numéro d'identification fiscale de la personne protégée."),
+  gir: z
+    .string()
+    .optional()
+    .describe('GIR (Groupe Iso-Ressources) de la personne protégée'),
+  alone: z
+    .boolean()
+    .optional()
+    .describe('Indique si la personne protégée vit seul.'),
+  pets: z
+    .boolean()
+    .optional()
+    .describe('Indique si la personne protégée possède des animaux.'),
+  religion: z.string().optional().describe('Religion de la personne protégée.'),
+  maritalStatus: z
+    .nativeEnum(MaritalStatuses)
+    .optional()
+    .describe('Statut marital de la personne protégée.'),
+  children: z
+    .number()
+    .optional()
+    .describe("Nombre d'enfants de la personne protégée."),
+  measures: z
+    .array(MeasureSchema)
+    .optional()
+    .describe(
+      'Liste des mesures de protection associées à la personne protégée.',
+    ),
+  realEstateProperties: z
+    .array(RealEstatePropertySchema)
+    .optional()
+    .describe('Liste des biens immobiliers de la personne protégée.'),
+  personalProperties: z
+    .array(PersonalPropertySchema)
+    .optional()
+    .describe('Liste des biens personnels de la personne protégée.'),
+  debts: z
+    .array(DebtSchema)
+    .optional()
+    .describe('Liste des dettes de la personne protégée.'),
+});
 
-export const extractIntelsFromDocuementsForUser = async (userId: string) => {
+const chatModel = new ChatOpenAI({
+  modelName,
+  temperature,
+  user,
+});
+
+const prompt = `
+    Tu es mandataire responsable d'une personne sous mesure de protection juridique.
+    Tu es chargé d'extraire les informations qui lui sont relatives à partir des documents qui te sont transmis.
+`;
+
+export const extractIntelsFromDocumentsForUser = async (userId: string) => {
   const documents = await DocumentRepository.findAllDocumentsBy({
     userId,
+    type: {
+      $nin: ['signature', 'avatar'],
+    },
   });
 
   const preparedDocuments = await Promise.map(
@@ -282,15 +273,15 @@ export const extractIntelsFromDocuementsForUser = async (userId: string) => {
   }
 
   const multiModalPrompt = ChatPromptTemplate.fromMessages(messages);
+  const chain = multiModalPrompt.pipe(
+    chatModel.withStructuredOutput(outputParser, {
+      includeRaw: true,
+    }),
+  );
+  const { parsed } = await chain.invoke({});
 
-  const chain = multiModalPrompt.pipe(chatModel).pipe(outputParser);
-
-  const response = await chain.invoke({
-    formatInstructions: outputParser.getFormatInstructions(),
-  });
-
-  if (response?.measures) {
-    for (const measure of response?.measures) {
+  if (parsed?.measures) {
+    for (const measure of parsed?.measures) {
       if (!measure.endDate && measure.duration) {
         measure.endDate = moment(measure.startDate, 'DD/MM/YYYY')
           .add(measure.duration, 'months')
@@ -302,9 +293,9 @@ export const extractIntelsFromDocuementsForUser = async (userId: string) => {
   const user = await UserRepository.findUserByIdOrThrow(userId);
 
   const payload: Partial<SH.User> = {};
-  for (const key of Object.keys(response)) {
-    if (response[key as keyof typeof response] && user[key] == undefined) {
-      payload[key as keyof SH.User] = response[key as keyof typeof response];
+  for (const key of Object.keys(parsed)) {
+    if (parsed[key as keyof typeof parsed] && user[key] == undefined) {
+      payload[key as keyof SH.User] = parsed[key as keyof typeof parsed];
     }
   }
 
