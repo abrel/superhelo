@@ -8,7 +8,18 @@ import { BiConversation } from 'react-icons/bi';
 import Section from '@@/components/Sidebar/Section';
 import Footer from '@@/components/Sidebar/Footer';
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
+  if (!logged) {
+    return (
+      <div className="relative sm:bg-white flex sm:mt-0 w-full sm:w-[190px]">
+        <div className="w-full sm:w-[190px] sm:fixed sm:h-full">
+          <Link to="/home" className="block mx-auto w-fit m-3">
+            <img src="/logo.svg" className="w-28" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="w-[190px] relative flex">
       <div className="bg-white flex flex-col justify-between h-full fixed">

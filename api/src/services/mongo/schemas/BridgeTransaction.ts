@@ -1,6 +1,6 @@
 import { Schema, SchemaType, Types } from 'mongoose';
 
-const bridgeTransactionSchema = new Schema<SH.BridgeMongoTransaction>(
+const bridgeTransactionSchema = new Schema<Bridge.MongoTransaction>(
   {
     _id: {
       type: Schema.Types.ObjectId,

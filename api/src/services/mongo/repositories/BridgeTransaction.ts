@@ -68,7 +68,7 @@ export const findBridgeTransactionsBy = async (
 };
 
 export const createBridgeTransaction = (
-  data: Partial<SH.BridgeMongoTransaction>,
+  data: Partial<Bridge.MongoTransaction>,
 ) => MongoManager.getModels().BridgeTransaction.create(data);
 
 export const updateBridgeTransactionById = async (
@@ -85,13 +85,13 @@ export const updateBridgeTransactionById = async (
         new: true,
         ...meta,
       },
-    )) as SH.BridgeMongoTransaction;
+    )) as Bridge.MongoTransaction;
 
   return newBridgeTransaction;
 };
 
 export const CreateOrUpdateBridgeTransaction = async (
-  data: Partial<SH.BridgeMongoTransaction> & { transaction_id: string },
+  data: Partial<Bridge.MongoTransaction> & { transaction_id: string },
 ) => {
   const existingBridgeTransaction = await findOneBridgeTransactionBy({
     transaction_id: data.transaction_id,

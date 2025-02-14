@@ -75,6 +75,12 @@ export const baseQueryWithReauth: BaseQueryFn<
 
 export const api = createApi({
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Users', 'Documents', 'BridgeItems', 'BridgeTransactions'],
+  tagTypes: [
+    'Users',
+    'Documents',
+    'BridgeItems',
+    'BridgeTransactions',
+    'Conversations',
+  ],
   endpoints: () => ({}),
 });

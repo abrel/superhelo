@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from '@@/components/Layout';
-import PrivateRoute from '@@/components/PrivateRoute';
+import PrivateRoute from '@@/components/Layout/PrivateRoute';
+import PublicRoute from '@@/components/Layout/PublicRoute';
 
 import SigninPage from '@@/pages/SigninPage';
 import SignupPage from '@@/pages/SignupPage';
@@ -46,6 +47,17 @@ const router = createBrowserRouter([
         element: <FallbackPage />,
       },
       {
+        path: '/conversations',
+        element: <PublicRoute />,
+        children: [
+          { index: true, element: <ConversationPage /> },
+          {
+            path: ':conversationId',
+            element: <ConversationPage />,
+          },
+        ],
+      },
+      {
         path: '/wards',
         element: <PrivateRoute />,
         children: [
@@ -64,11 +76,6 @@ const router = createBrowserRouter([
         path: '/calendar',
         element: <PrivateRoute />,
         children: [{ index: true, element: <CalendarPage /> }],
-      },
-      {
-        path: '/conversations',
-        element: <PrivateRoute />,
-        children: [{ index: true, element: <ConversationPage /> }],
       },
       {
         path: '/me',

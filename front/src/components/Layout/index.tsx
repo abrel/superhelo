@@ -8,7 +8,7 @@ const Layout: React.FC = () => {
   useScrollToAnchor();
 
   return (
-    <div className="flex flex-col bg-gray-100">
+    <div className="flex flex-col bg-gray-50 h-full">
       <Outlet />
       <ScrollRestoration />
     </div>

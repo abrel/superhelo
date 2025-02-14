@@ -8,10 +8,6 @@ export const bridgeWebhook = async (
 ) => {
   const xForwardedFor = req.headers['x-forwarded-for'];
   console.log({ xForwardedFor });
-  //63.32.31.5
-  //52.215.247.62
-  //34.249.92.209
-
   console.dir(req.body, { depth: undefined });
 
   const hash = crypto
