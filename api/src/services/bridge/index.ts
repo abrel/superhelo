@@ -32,7 +32,7 @@ class BridgeService {
   }
 
   listProviders = async () => {
-    let providers: SH.BridgeProvider[] = [];
+    let providers: Bridge.Provider[] = [];
     let url = '/v3/providers';
 
     while (url) {
@@ -182,7 +182,7 @@ class BridgeService {
   };
 
   retrieveUserItems = async (userId: string) => {
-    let resources: SH.BridgeItem[] = [];
+    let resources: Bridge.Item[] = [];
     let url = '/items';
     const token = await this.findOrCreateToken(userId);
 
@@ -226,7 +226,7 @@ class BridgeService {
 
   retrieveAccountsInformation = async (userId: string) => {
     const token = await this.findOrCreateToken(userId);
-    let resources: SH.BridgeAccount[] = [];
+    let resources: Bridge.Account[] = [];
     let url = '/accounts';
 
     while (url) {
@@ -248,7 +248,7 @@ class BridgeService {
     userId: string,
     params: { since?: Date; limit?: number },
   ) => {
-    let resources: SH.BridgeTransaction[] = [];
+    let resources: Bridge.Transaction[] = [];
     let url = '/transactions';
 
     const token = await this.findOrCreateToken(userId);
@@ -307,7 +307,7 @@ class BridgeService {
     userId: string;
     accountId: number;
   }) => {
-    let resources: SH.BridgeStock[] = [];
+    let resources: Bridge.Stock[] = [];
     let url = '/stocks';
 
     const token = await this.findOrCreateToken(userId);

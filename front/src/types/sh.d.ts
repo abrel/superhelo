@@ -216,4 +216,18 @@ declare namespace SH {
     createdAt?: Date;
     updatedAt?: Date;
   };
+
+  export type Message = {
+    _id: string;
+    id: string;
+    messageId: string;
+    conversationId: string;
+    type: string;
+    content: string;
+
+    userId?: string;
+
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
 }

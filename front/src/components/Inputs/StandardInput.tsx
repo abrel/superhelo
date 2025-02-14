@@ -13,6 +13,7 @@ const StandardInput: React.FC<{
   inputClassName?: string;
   labelClassName?: string;
   errorClassName?: string;
+  handleKeyDown?: (e: React.KeyboardEvent) => void;
 }> = ({
   register,
   id,
@@ -24,6 +25,7 @@ const StandardInput: React.FC<{
   inputClassName = 'peer block w-full ring-1 ring-gray-200 shadow-sm py-3 px-4 border-main rounded-md placeholder-transparent font-main text-main text-sm',
   labelClassName = 'absolute pointer-events-none font-main text-main text-sm -top-7 left-0 transition-all peer-focus:-top-6 peer-focus:left-0 peer-focus:text-sm peer-placeholder-shown:top-3 peer-placeholder-shown:left-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:italic',
   errorClassName = 'italic font-main text-sm text-red-500 m-1',
+  handleKeyDown,
 }) => {
   const errorComponent = useMemo(
     () => error?.message && <p className={errorClassName}>{error.message}</p>,
@@ -46,6 +48,7 @@ const StandardInput: React.FC<{
           placeholder={placeholder}
           className={inputClassName}
           aria-invalid={error ? 'true' : 'false'}
+          onKeyDown={(e) => !!handleKeyDown && handleKeyDown(e)}
         />
         <label htmlFor={id} className={labelClassName}>
           {label}

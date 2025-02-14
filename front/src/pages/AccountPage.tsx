@@ -6,7 +6,7 @@ import cx from 'classnames';
 import { useRetrieveAccountTransactionsQuery } from '@@/services/bridge';
 import { useGetUserQuery } from '@@/services/user';
 
-import { formatCurrency } from '@@/utils/intl';
+import { formatCurrency } from '@@/utils/format';
 
 const AccountPage: React.FC = () => {
   const { wardId, accountId } = useParams<{

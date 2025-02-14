@@ -9,6 +9,7 @@ import RootRouter from '@@/routers/RootRouter';
 import AuthRouter from '@@/routers/AuthRouter';
 import UserRouter from '@@/routers/UserRouter';
 import DocumentRouter from '@@/routers/DocumentRouter';
+import ConversationRouter from '@@/routers/ConversationRouter';
 import { initSH } from '@@/controllers/RootController';
 import HttpError from '@@/utils/HttpError';
 
@@ -29,6 +30,7 @@ app.use('/', RootRouter(app));
 app.use('/auth', AuthRouter(app));
 app.use('/users', UserRouter(app));
 app.use('/documents', DocumentRouter(app));
+app.use('/conversations', ConversationRouter(app));
 
 Sentry.setupExpressErrorHandler(app);
 app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {

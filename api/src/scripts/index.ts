@@ -1,6 +1,6 @@
 import '@@/config';
 // import BridgeService from '@@/services/bridge';
-// import { extractIntelsFromDocumentsForUser } from '@@/services/gpt';
+// import { extractIntelsFromDocumentsForUser } from '@@/services/gpt/openai/document';
 
 const main = async () => {
   // await BridgeService.syncTransactions();

@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import cx from 'classnames';
 import { translateAccountType, getAccountColor } from '@@/constants/bridge';
-import { formatCurrency } from '@@/utils/intl';
-import { formatIban } from '@@/utils/iban';
+import { formatIban, formatCurrency } from '@@/utils/format';
 
 const AccountCard: React.FC<{
   account: SH.BridgeAccount;

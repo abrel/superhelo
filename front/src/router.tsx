@@ -46,6 +46,16 @@ const router = createBrowserRouter([
         element: <FallbackPage />,
       },
       {
+        path: '/conversations',
+        children: [
+          { index: true, element: <ConversationPage /> },
+          {
+            path: ':conversationId',
+            element: <ConversationPage />,
+          },
+        ],
+      },
+      {
         path: '/wards',
         element: <PrivateRoute />,
         children: [
@@ -64,11 +74,6 @@ const router = createBrowserRouter([
         path: '/calendar',
         element: <PrivateRoute />,
         children: [{ index: true, element: <CalendarPage /> }],
-      },
-      {
-        path: '/conversations',
-        element: <PrivateRoute />,
-        children: [{ index: true, element: <ConversationPage /> }],
       },
       {
         path: '/me',

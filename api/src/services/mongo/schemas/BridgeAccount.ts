@@ -1,6 +1,6 @@
 import { Schema, SchemaType, Types } from 'mongoose';
 
-const bridgeAccountSchema = new Schema<SH.BridgeUserAccount>(
+const bridgeAccountSchema = new Schema<Bridge.UserAccount>(
   {
     _id: {
       type: Schema.Types.ObjectId,

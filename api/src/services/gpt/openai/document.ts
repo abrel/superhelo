@@ -1,17 +1,19 @@
-import '@@/config';
 import moment from 'moment';
 import { z } from 'zod';
 import Promise from 'bluebird';
 import { ChatOpenAI } from '@langchain/openai';
-import { HumanMessage } from '@langchain/core/messages';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 
 import * as DocumentRepository from '@@/services/mongo/repositories/Document';
 import * as UserRepository from '@@/services/mongo/repositories/User';
-import { modelName, user, temperature } from '@@/constants/gpt';
 import { Genders, MaritalStatuses } from '@@/constants/user';
 import { MeasureTypes } from '@@/constants/measure';
 import { getDocumentContent } from '@@/utils/document';
+
+const modelName = 'gpt-4o';
+const temperature = 0.5;
+const user = 'do-not-train';
 
 const MeasureSchema = z.object({
   type: z
@@ -244,7 +246,7 @@ export const extractIntelsFromDocumentsForUser = async (userId: string) => {
     { concurrency: 2 },
   );
 
-  const messages = [['system', prompt]] as any[];
+  const messages = [new SystemMessage(prompt)];
 
   for (const documents of preparedDocuments) {
     for (const document of documents) {
