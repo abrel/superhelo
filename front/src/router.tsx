@@ -68,7 +68,13 @@ const router = createBrowserRouter([
       {
         path: '/conversations',
         element: <PrivateRoute />,
-        children: [{ index: true, element: <ConversationPage /> }],
+        children: [
+          { index: true, element: <ConversationPage /> },
+          {
+            path: ':conversationId',
+            element: <ConversationPage />,
+          },
+        ],
       },
       {
         path: '/me',

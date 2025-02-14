@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import * as Sentry from '@sentry/node';
 import UserSchema from '@@/services/mongo/schemas/User';
 import DocumentSchema from '@@/services/mongo/schemas/Document';
+import MessageSchema from '@@/services/mongo/schemas/Message';
 import BridgeAccountSchema from '@@/services/mongo/schemas/BridgeAccount';
 import BridgeTransactionSchema from '@@/services/mongo/schemas/BridgeTransaction';
 
@@ -26,14 +27,15 @@ class MongoManager {
     const shDB = mongoose.connection.useDb('sh');
     this.models.User = shDB.model<SH.User>('User', UserSchema);
     this.models.Document = shDB.model<SH.Document>('Document', DocumentSchema);
-    this.models.BridgeAccount = shDB.model<SH.BridgeUserAccount>(
+    this.models.BridgeAccount = shDB.model<Bridge.UserAccount>(
       'BridgeAccount',
       BridgeAccountSchema,
     );
-    this.models.BridgeTransaction = shDB.model<SH.BridgeMongoTransaction>(
+    this.models.BridgeTransaction = shDB.model<Bridge.MongoTransaction>(
       'BridgeTransaction',
       BridgeTransactionSchema,
     );
+    this.models.Message = shDB.model<AI.Message>('Message', MessageSchema);
 
     mongoose.connection.on('error', (e: Error) => {
       Sentry.captureException(e);

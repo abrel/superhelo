@@ -18,6 +18,8 @@ declare global {
       BRIDGE_CLIENT_ID: string;
       BRIDGE_CLIENT_SECRET: string;
       BRIDGE_WEBHOOK_SECRET: string;
+      OPENAI_API_KEY: string;
+      MISRA_API_KEY: string;
     }
   }
 }

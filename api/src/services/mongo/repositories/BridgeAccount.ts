@@ -17,7 +17,7 @@ export const findAllBridgeAccountsBy = async (
     .select(selectableFields);
 };
 
-export const createBridgeAccount = (data: Partial<SH.BridgeUserAccount>) =>
+export const createBridgeAccount = (data: Partial<Bridge.UserAccount>) =>
   MongoManager.getModels().BridgeAccount.create(data);
 
 export const findBridgeAccountByUserId = (userId: string, extra?: string[]) => {
@@ -44,7 +44,7 @@ export const findBridgeAccountByUserIdOrThrow = async (
     throw new HttpError(`BridgeAccount not found with id: ${userId}`, 404);
   }
 
-  return bridgeaccount as SH.BridgeUserAccount;
+  return bridgeaccount as Bridge.UserAccount;
 };
 
 export const deleteBridgeAccountById = (id: string) =>
@@ -65,7 +65,7 @@ export const updateBridgeAccountById = async (
           : selectableBridgeAccountFields.concat(Object.keys(payload)),
         new: true,
       },
-    )) as SH.BridgeUserAccount;
+    )) as Bridge.UserAccount;
 
   return newBridgeAccount;
 };
