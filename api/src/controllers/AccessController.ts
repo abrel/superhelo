@@ -111,12 +111,19 @@ export const hasAccessToDocument = async (
         return next();
       }
 
-      return next(new HttpError('UNAUTHORIZED', 403));
+      break;
     }
 
     default: {
       if (
         String(req.sh.document?.userId) === String(req.sh.verifiedToken?.id)
+      ) {
+        return next();
+      }
+
+      if (
+        !req.sh.document?.userId &&
+        req.sh.document?.conversationId === req.params.conversationId
       ) {
         return next();
       }

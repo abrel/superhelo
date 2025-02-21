@@ -10,13 +10,17 @@ const documentSchema = new Schema<SH.Document>(
     },
     userId: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: false,
       ref: 'User',
     },
     createdBy: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: false,
       ref: 'User',
+    },
+    conversationId: {
+      type: Schema.Types.String,
+      required: false,
     },
     name: {
       type: Schema.Types.String,
@@ -63,6 +67,7 @@ const documentSchema = new Schema<SH.Document>(
 );
 
 documentSchema.index({ userId: 1 });
+documentSchema.index({ conversationId: 1 });
 documentSchema.index({ createdBy: 1 });
 documentSchema.index({ key: 1 });
 documentSchema.plugin(mongoosePaginate);

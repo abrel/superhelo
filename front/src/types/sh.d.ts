@@ -145,8 +145,9 @@ declare namespace SH {
   export type Document = {
     _id: string;
     id: string;
-    userId: User;
-    createdBy: User;
+    userId?: User;
+    createdBy?: User;
+    conversationId?: string;
     name: string;
     label?: string;
     type?: DocumentTypes;
@@ -226,6 +227,7 @@ declare namespace SH {
     content: string;
 
     userId?: string;
+    documentIds: Document[];
 
     createdAt?: Date;
     updatedAt?: Date;

@@ -10,6 +10,7 @@ declare namespace AI {
     content: string;
 
     userId?: Types.ObjectId;
+    documentIds?: Types.ObjectId[];
 
     createdAt?: Date;
     updatedAt?: Date;

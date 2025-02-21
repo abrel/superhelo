@@ -80,7 +80,6 @@ export const handleUserDocuments = async (
 
     const folder = `documents/${userId}`;
     req.sh.documents = [];
-    const relevantDocumentIds = [];
 
     for (const file of req.files) {
       const filename = file.originalname
@@ -205,6 +204,47 @@ export const handleUserSignature = async (
     ]);
 
     user.signatureDocumentId = document._id;
+
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const handleConversationDocuments = async (
+  req: Request & {
+    files: Express.Multer.File[];
+  },
+  _res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.files) {
+      return next();
+    }
+
+    const folder = `documents/${req.sh.conversationId}`;
+    req.sh.documents = [];
+
+    for (const file of req.files) {
+      const filename = file.originalname
+        .normalize('NFD')
+        .replace(/([\u0300-\u036f]|[^0-9a-zA-Z\s.])/g, '');
+
+      await S3Manager.uploadFile({
+        key: `${folder}/${filename}`,
+        contentType: file.mimetype,
+        body: file.buffer,
+      });
+      const document = await DocumentRepository.createDocument({
+        userId: req.sh.verifiedToken?.id,
+        conversationId: req.sh.conversationId,
+        name: filename,
+        key: `${folder}/${filename}`,
+        mimetype: file.mimetype,
+      });
+      req.sh.documents.push(document);
+    }
 
     return next();
   } catch (e) {

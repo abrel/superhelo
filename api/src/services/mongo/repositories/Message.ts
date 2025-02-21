@@ -11,6 +11,7 @@ export const findAllMessagesBy = async (
 
   return MongoManager.getModels()
     .Message.find(where)
+    .populate(['documentIds'])
     .sort({ createdAt: 1 })
     .select(selectableFields);
 };

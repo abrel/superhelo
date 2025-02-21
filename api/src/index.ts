@@ -21,11 +21,11 @@ app.use(cors({ origin: '*' }));
 app.use(initSH);
 
 app.use('/webhooks', [
-  bodyParser.raw({ type: 'application/json' }),
+  bodyParser.raw({ type: 'application/json', limit: '50mb' }),
   WebhookRouter(app),
 ]);
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '100mb' }));
 app.use('/', RootRouter(app));
 app.use('/auth', AuthRouter(app));
 app.use('/users', UserRouter(app));

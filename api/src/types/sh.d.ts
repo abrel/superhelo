@@ -150,9 +150,11 @@ declare namespace SH {
   export type Document = {
     _id: Types.ObjectId;
     id: string;
-    userId: Types.ObjectId;
-    createdBy: Types.ObjectId;
     name: string;
+
+    userId?: Types.ObjectId;
+    conversationId?: string;
+    createdBy?: Types.ObjectId;
     label?: string;
 
     key: string;

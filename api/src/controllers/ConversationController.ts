@@ -5,31 +5,49 @@ import GuardianChatBot from '@@/services/gpt/mistral/chat';
 import * as MessageRepository from '@@/services/mongo/repositories/Message';
 import { MessageTypes } from '@@/constants/message';
 
-export const handleQuestion = async (
+export const setConversationId = async (
   req: Request,
+  _res: Response,
+  next: NextFunction,
+) => {
+  req.sh.conversationId = req.body.conversationId || uuidv4();
+  return next();
+};
+
+export const handleQuestion = async (
+  req: Request & {
+    files?: Express.Multer.File[];
+  },
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const conversationId = req.body.conversationId || uuidv4();
     const response = await GuardianChatBot.askQuestion({
       question: req.body.question,
-      threadId: conversationId,
+      threadId: req.sh.conversationId!,
+      files: req.files,
     });
 
     for (const message of response.messages) {
-      if (message.id && message.content) {
+      if (message.id && typeof message.content === 'string') {
+        const isFromAI = isAIMessage(message);
         await MessageRepository.findOrCreateMessage({
-          conversationId,
+          conversationId: req.sh.conversationId!,
+          userId: req.sh.verifiedToken?.id,
           messageId: message.id,
-          content: String(message.content),
-          type: isAIMessage(message) ? MessageTypes.AI : MessageTypes.HUMAN,
+          content: message.content,
+          type: isFromAI ? MessageTypes.AI : MessageTypes.HUMAN,
+          documentIds: isFromAI
+            ? undefined
+            : req.sh.documents?.map((doc) => doc.id),
         });
       }
     }
 
     return res.json(
-      await MessageRepository.findAllMessagesBy({ conversationId }),
+      await MessageRepository.findAllMessagesBy({
+        conversationId: req.sh.conversationId!,
+      }),
     );
   } catch (error) {
     return next(error);

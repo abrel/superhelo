@@ -21,6 +21,11 @@ const messageSchema = new Schema<AI.Message>(
       type: Schema.Types.String,
       required: true,
     },
+    documentIds: {
+      type: [Schema.Types.ObjectId],
+      required: false,
+      ref: 'Document',
+    },
     type: {
       type: Schema.Types.String,
       required: true,

@@ -20,6 +20,7 @@ declare global {
       BRIDGE_WEBHOOK_SECRET: string;
       OPENAI_API_KEY: string;
       MISRA_API_KEY: string;
+      GROK_API_KEY: string;
     }
   }
 }

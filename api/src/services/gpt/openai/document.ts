@@ -2,7 +2,7 @@ import moment from 'moment';
 import { z } from 'zod';
 import Promise from 'bluebird';
 import { ChatOpenAI } from '@langchain/openai';
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import { SystemMessage } from '@langchain/core/messages';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 
 import * as DocumentRepository from '@@/services/mongo/repositories/Document';
@@ -233,6 +233,8 @@ const prompt = `
 `;
 
 export const extractIntelsFromDocumentsForUser = async (userId: string) => {
+  const messages = [new SystemMessage(prompt)];
+
   const documents = await DocumentRepository.findAllDocumentsBy({
     userId,
     type: {
@@ -240,13 +242,9 @@ export const extractIntelsFromDocumentsForUser = async (userId: string) => {
     },
   });
 
-  const preparedDocuments = await Promise.map(
-    documents,
-    async (doc: SH.Document) => getDocumentContent(doc),
-    { concurrency: 2 },
-  );
-
-  const messages = [new SystemMessage(prompt)];
+  const preparedDocuments = await Promise.map(documents, getDocumentContent, {
+    concurrency: 5,
+  });
 
   for (const documents of preparedDocuments) {
     for (const document of documents) {
@@ -270,7 +268,7 @@ export const extractIntelsFromDocumentsForUser = async (userId: string) => {
         }
       }
 
-      messages.push(new HumanMessage({ content }));
+      messages.push(new SystemMessage({ content }));
     }
   }
 

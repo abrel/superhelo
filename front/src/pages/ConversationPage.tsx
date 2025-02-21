@@ -8,25 +8,30 @@ import {
 } from '@@/services/conversation';
 import { formatMessageText } from '@@/utils/format';
 import { MessageTypes } from '@@/constants/message';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import StandardInput from '@@/components/Inputs/StandardInput';
 import TypingIndicator from '@@/components/TypingIndicator';
-import { LuArrowUpFromLine } from 'react-icons/lu';
+import AuthenticatedLink from '@@/components/AuthenticatedLink';
+import AuthenticatedImage from '@@/components/AuthenticatedImage';
+import { LuArrowUpFromLine, LuPaperclip } from 'react-icons/lu';
 import { CiCirclePlus } from 'react-icons/ci';
+import { IoDocumentTextOutline } from 'react-icons/io5';
+import { TiDelete } from 'react-icons/ti';
 
 const schema = yup
   .object({
     question: yup
       .string()
-      .required('Veuillez entrer votre question')
+      .required('Veuillez entrer votre question ici')
       .min(5, 'Votre question doit contenir au moins 5 caractères'),
   })
   .required();
 
 type ConversationInput = {
   question: string;
+  files?: File[];
 };
 
 const ConversationPage: React.FC = () => {
@@ -41,8 +46,10 @@ const ConversationPage: React.FC = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
+    setValue,
     watch,
     formState: { isSubmitting, errors },
   } = useForm<ConversationInput>({
@@ -50,17 +57,26 @@ const ConversationPage: React.FC = () => {
     mode: 'onBlur',
   });
 
-  const [question] = watch(['question']);
-  const [questionInProcess, setQuestionInProcess] = useState<string>('');
+  const [question, files] = watch(['question', 'files']);
+  const [questionInProcess, setQuestionInProcess] = useState<ConversationInput>(
+    {
+      question: '',
+      files: [],
+    },
+  );
 
   const onSubmit = useCallback(
     (input: ConversationInput) => {
       handleQuestion({
         question: input.question,
+        files: input.files,
         conversationId,
       });
 
-      setQuestionInProcess(input.question);
+      setQuestionInProcess({
+        question: input.question,
+        files: input.files,
+      });
 
       setTimeout(() => {
         document
@@ -74,7 +90,7 @@ const ConversationPage: React.FC = () => {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey && question) {
-        onSubmit({ question });
+        onSubmit({ question, files });
       }
     },
     [question, onSubmit],
@@ -99,12 +115,12 @@ const ConversationPage: React.FC = () => {
   }, [conversation]);
 
   useEffect(() => {
-    reset({ question: '' });
+    reset({ question: '', files: [] });
   }, [isLoading, reset]);
 
   useEffect(() => {
     if (isSuccess) {
-      setQuestionInProcess('');
+      setQuestionInProcess({ question: '', files: [] });
       if (!conversationId) {
         navigate(`/conversations/${data?.[0]?.conversationId}`);
       }
@@ -135,11 +151,31 @@ const ConversationPage: React.FC = () => {
                   : 'bg-gray-200 mr-auto',
               )}
             >
+              {message?.documentIds?.map((doc) => (
+                <AuthenticatedLink
+                  key={doc.id}
+                  documentId={`${doc.id}/${message.conversationId}`}
+                  className="flex flex-row items-center mb-1 bg-gray-100 border border-gray-200 p-1 rounded-md w-fit"
+                >
+                  {doc.mimetype.includes('image') ? (
+                    <AuthenticatedImage
+                      documentId={`${doc.id}/${message.conversationId}`}
+                      alt={doc.name}
+                      className="h-10 w-10 content-center object-cover rounded-lg"
+                    />
+                  ) : (
+                    <IoDocumentTextOutline size={22} />
+                  )}
+                  <span className="ml-1">{doc.name}</span>
+                </AuthenticatedLink>
+              ))}
+
               <div
                 dangerouslySetInnerHTML={{
                   __html: formatMessageText(message.content),
                 }}
               />
+
               <div className="flex flex-row justify-end">
                 <p className="text-sm text-gray-500 text-right italic mr-1">
                   {moment(message.createdAt).calendar()}
@@ -154,7 +190,24 @@ const ConversationPage: React.FC = () => {
                 'relative mb-4 p-4 rounded-lg max-w-[800px] w-4/5 sm:w-fit bg-green-200 ml-auto',
               )}
             >
-              <p>{questionInProcess}</p>
+              {questionInProcess?.files?.map((file, i) => (
+                <div
+                  key={i}
+                  className="flex flex-row items-center bg-gray-100 border border-gray-200 p-1 rounded-md w-fit"
+                >
+                  {file.type.includes('image') ? (
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      className="h-10 w-10 content-center object-cover rounded-lg"
+                    />
+                  ) : (
+                    <IoDocumentTextOutline size={22} />
+                  )}
+                  <span className="ml-1">{file.name}</span>
+                </div>
+              ))}
+              <p className="mt-0.5">{questionInProcess?.question}</p>
             </div>
           )}
           {isLoading && (
@@ -171,42 +224,102 @@ const ConversationPage: React.FC = () => {
         </div>
       </div>
 
-      <div id="input-bar" className="p-4">
-        <div className="relative bottom-0 mx-auto w-full sm:max-w-[1000px]">
-          {!!conversationId && (
-            <Link
-              reloadDocument
-              className="bg-gray-400 w-fit py-1 px-2 rounded-md mx-auto mb-2 flex flex-row items-center"
-              to="/conversations"
-            >
-              <CiCirclePlus className="text-white" size={18} />
-              <span className="text-xs text-white ml-1">
-                Nouvelle conversation
-              </span>
-            </Link>
+      <div
+        id="input-bar"
+        className="py-4 relative bottom-0 mx-auto w-full sm:max-w-[1000px]"
+      >
+        {!!conversationId && (
+          <Link
+            reloadDocument
+            className="bg-gray-400 w-fit py-1 px-2 rounded-md mx-auto mb-2 flex flex-row items-center"
+            to="/conversations"
+          >
+            <CiCirclePlus className="text-white" size={18} />
+            <span className="text-xs text-white ml-1">
+              Nouvelle conversation
+            </span>
+          </Link>
+        )}
+
+        <div className="relative bg-white h-30 border border-blue-300 p-0.5 rounded-md">
+          {!!files?.length && (
+            <div className="m-1 flex flex-row items-center">
+              {Array.from(files).map((file: any, i) => (
+                <div
+                  key={i}
+                  className="flex flex-row items-center bg-gray-200 p-1 m-0.5 rounded-md w-fit"
+                >
+                  <p className="font-main">{file.name}</p>
+                  <button
+                    className="ml-2"
+                    onClick={() => {
+                      const newFiles = Array.from(files).filter(
+                        (_: any, index: number) => index !== i,
+                      );
+                      setValue('files', newFiles);
+                    }}
+                  >
+                    <TiDelete className="text-red-500" size={18} />
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
           <StandardInput
             register={register}
             id="question"
             label="Vos question(s)"
             type="textarea"
-            placeholder="Vos question(s)"
-            error={errors.question}
-            rows={4}
+            placeholder={errors.question?.message || 'Vos question(s)'}
+            rows={3}
             handleKeyDown={handleKeyDown}
             labelClassName="hidden"
-            inputClassName="peer block w-full ring-1 ring-gray-200 shadow-sm py-3 px-4 border-main rounded-md font-main text-sm"
-          />
-          <button
-            onClick={handleSubmit(onSubmit)}
-            disabled={isSubmitting}
-            className={cx(
-              'bg-gray-500 p-2 rounded-md absolute right-2',
-              errors.question ? 'bottom-8' : 'bottom-2',
+            inputClassName={cx(
+              'block outline-none resize-none w-full text-sm py-3 px-4',
+              errors.question && 'placeholder-red-500 placeholder-opacity-75',
             )}
-          >
-            <LuArrowUpFromLine className="text-white" />
-          </button>
+          />
+
+          <div className="flex flex-row items-start justify-between">
+            <label
+              htmlFor="files"
+              className="bg-gray-200 p-1 m-0.5 rounded-md cursor-pointer"
+            >
+              <LuPaperclip size={18} />
+              <Controller
+                control={control}
+                name="files"
+                render={({ field }) => {
+                  return (
+                    <input
+                      {...field}
+                      value=""
+                      onChange={(event) => {
+                        const newFiles = event.target.files
+                          ? Array.from(event.target.files)
+                          : [];
+                        const existingFiles = Array.isArray(field.value)
+                          ? field.value
+                          : [];
+                        field.onChange([...existingFiles, ...newFiles]);
+                      }}
+                      type="file"
+                      id="files"
+                      multiple
+                      className="hidden"
+                    />
+                  );
+                }}
+              />
+            </label>
+            <button
+              onClick={handleSubmit(onSubmit)}
+              disabled={isSubmitting}
+              className="bg-gray-500 m-0.5 p-1 rounded-md"
+            >
+              <LuArrowUpFromLine size={18} className="text-white" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

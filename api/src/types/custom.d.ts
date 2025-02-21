@@ -6,6 +6,7 @@ declare namespace Express {
       users?: SH.User[];
       document?: SH.Document;
       documents?: SH.Document[];
+      conversationId?: string;
     };
   }
 }

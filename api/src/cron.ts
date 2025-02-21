@@ -2,6 +2,7 @@
 import '@@/config';
 import '@@/instrument';
 import cron from 'node-cron';
+import * as Sentry from '@sentry/node';
 import BridgeService from '@@/services/bridge';
 
 const tz = 'Europe/Paris';
@@ -14,7 +15,7 @@ cron.schedule(
       await BridgeService.syncTransactions();
       console.log('Sync Transactions : OK');
     } catch (e) {
-      console.error(e);
+      Sentry.captureException(e);
     }
   },
   { timezone: tz },

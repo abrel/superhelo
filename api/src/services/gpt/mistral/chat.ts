@@ -1,9 +1,11 @@
+import Promise from 'bluebird';
 import { ChatMistralAI } from '@langchain/mistralai';
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
 import {
+  BaseMessage,
   HumanMessage,
   SystemMessage,
   trimMessages,
@@ -16,13 +18,54 @@ import {
 } from '@langchain/langgraph';
 import { MongoDBSaver } from '@langchain/langgraph-checkpoint-mongodb';
 import MongoManager from '@@/services/mongo';
+import { getFileContent } from '@@/utils/document';
+
+const MAX_TOKENS = 150000;
+
+const tokenCounter = (msg: BaseMessage): number => {
+  let text: string;
+  if (typeof msg.content === 'string') {
+    text = msg.content;
+  } else if (Array.isArray(msg.content)) {
+    text = msg.content
+      .map((item) => (typeof item === 'string' ? item : JSON.stringify(item)))
+      .join(' ');
+  } else {
+    text = JSON.stringify(msg.content);
+  }
+
+  return text.length / 4;
+};
+
+const filterOldLargeMessages = (
+  msgs: BaseMessage[],
+  preserveCount: number = 5,
+): BaseMessage[] => {
+  return msgs.filter((msg, idx) => {
+    if (idx >= msgs.length - preserveCount) {
+      return true;
+    }
+
+    return tokenCounter(msg) < MAX_TOKENS / 5;
+  });
+};
+
+const customTokenCounter = (msgs: BaseMessage[]): number => {
+  let totalTokens = 0;
+
+  for (const msg of msgs) {
+    totalTokens += tokenCounter(msg);
+  }
+
+  return totalTokens;
+};
 
 const trimmer = trimMessages({
-  maxTokens: 50,
+  maxTokens: MAX_TOKENS,
   strategy: 'last',
-  tokenCounter: (msgs) => msgs.length,
+  tokenCounter: customTokenCounter,
   includeSystem: true,
-  allowPartial: false,
+  allowPartial: true,
 });
 
 class GuardianChatBot {
@@ -30,7 +73,7 @@ class GuardianChatBot {
 
   constructor() {
     const llm = new ChatMistralAI({
-      model: 'mistral-large-latest',
+      model: 'pixtral-large-latest',
       temperature: 0.3,
     });
 
@@ -57,8 +100,12 @@ class GuardianChatBot {
         new MessagesPlaceholder('messages'),
       ]);
 
+      const trimmedMessages = await trimmer.invoke(
+        filterOldLargeMessages(state.messages),
+      );
+
       const prompt = await promptTemplate.invoke({
-        messages: await trimmer.invoke(state.messages),
+        messages: trimmedMessages,
       });
 
       const response = await llm.invoke(prompt);
@@ -84,15 +131,49 @@ class GuardianChatBot {
   askQuestion = async ({
     question,
     threadId,
+    files,
   }: {
     question: string;
     threadId: string;
+    files?: Express.Multer.File[];
   }) => {
     const config = { configurable: { thread_id: threadId } };
-    const output = await this.app.invoke(
-      { messages: [new HumanMessage(question)] },
-      config,
-    );
+    const messages: (HumanMessage | SystemMessage)[] = [];
+
+    if (files) {
+      const preparedDocuments = await Promise.map(files, getFileContent, {
+        concurrency: 5,
+      });
+
+      for (const documents of preparedDocuments) {
+        for (const document of documents) {
+          const content = [];
+
+          if (document.data) {
+            content.push({
+              type: 'text',
+              text: `Title: ${document.title}\n\nContent:\n${document.data}`,
+            });
+          }
+
+          if (document.b64Images) {
+            for (const b64Image of document.b64Images) {
+              content.push({
+                type: 'image_url',
+                image_url: {
+                  url: b64Image,
+                },
+              });
+            }
+          }
+
+          messages.push(new HumanMessage({ content }));
+        }
+      }
+    }
+
+    messages.push(new HumanMessage(question));
+    const output = await this.app.invoke({ messages }, config);
 
     return output;
   };
