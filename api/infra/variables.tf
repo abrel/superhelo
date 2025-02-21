@@ -43,12 +43,12 @@ variable "health_check_path" {
 
 variable "fargate_cpu" {
   description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  default     = 256
+  default     = 1024
 }
 
 variable "fargate_memory" {
   description = "Fargate instance memory to provision (in MiB)"
-  default     = 512
+  default     = 2048
 }
 
 variable "zone_id" {
@@ -76,11 +76,11 @@ variable "cron_repository_name" {
 
 variable "fargate_cpu_cron" {
   description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  default     = 512
+  default     = 256
 }
 
 variable "fargate_memory_cron" {
   description = "Fargate instance memory to provision (in MiB)"
-  default     = 1024
+  default     = 512
 }
 

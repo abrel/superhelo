@@ -38,10 +38,12 @@ app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
   return res.status(err.status || 500).json(err);
 });
 
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
   console.log(
     `⚡️[API]-[${process.env.ENV}]: Service is running at http://localhost:${process.env.PORT}`,
   );
 });
+
+server.timeout = 2 * 60 * 1000;
 
 export default app;
