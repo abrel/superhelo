@@ -20,6 +20,8 @@ import { CiCirclePlus } from 'react-icons/ci';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { TiDelete } from 'react-icons/ti';
 
+import MicRecorder from '@@/components/MicRecorder';
+
 const schema = yup
   .object({
     question: yup
@@ -94,6 +96,18 @@ const ConversationPage: React.FC = () => {
       }
     },
     [question, onSubmit],
+  );
+
+  const handleMic = useCallback(
+    (err: Error | null, txt: string | null) => {
+      if (err) {
+        return;
+      }
+      if (txt) {
+        setValue('question', txt);
+      }
+    },
+    [setValue],
   );
 
   useEffect(() => {
@@ -281,41 +295,45 @@ const ConversationPage: React.FC = () => {
           />
 
           <div className="flex flex-row items-start justify-between">
-            <label
-              htmlFor="files"
-              className="bg-gray-200 p-1 m-0.5 rounded-md cursor-pointer"
-            >
-              <LuPaperclip size={18} />
-              <Controller
-                control={control}
-                name="files"
-                render={({ field }) => {
-                  return (
-                    <input
-                      {...field}
-                      value=""
-                      onChange={(event) => {
-                        const newFiles = event.target.files
-                          ? Array.from(event.target.files)
-                          : [];
-                        const existingFiles = Array.isArray(field.value)
-                          ? field.value
-                          : [];
-                        field.onChange([...existingFiles, ...newFiles]);
-                      }}
-                      type="file"
-                      id="files"
-                      multiple
-                      className="hidden"
-                    />
-                  );
-                }}
-              />
-            </label>
+            <div className="flex flex-row items-center w-full">
+              <label
+                htmlFor="files"
+                className="bg-gray-200 p-1 m-0.5 mr-1 rounded-md cursor-pointer"
+              >
+                <LuPaperclip size={18} />
+                <Controller
+                  control={control}
+                  name="files"
+                  render={({ field }) => {
+                    return (
+                      <input
+                        {...field}
+                        value=""
+                        onChange={(event) => {
+                          const newFiles = event.target.files
+                            ? Array.from(event.target.files)
+                            : [];
+                          const existingFiles = Array.isArray(field.value)
+                            ? field.value
+                            : [];
+                          field.onChange([...existingFiles, ...newFiles]);
+                        }}
+                        type="file"
+                        id="files"
+                        multiple
+                        className="hidden"
+                      />
+                    );
+                  }}
+                />
+              </label>
+              <MicRecorder cb={handleMic} />
+            </div>
+
             <button
               onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              className="bg-gray-500 m-0.5 p-1 rounded-md"
+              className="bg-gray-500 m-0.5 p-1 rounded-md ml-2"
             >
               <LuArrowUpFromLine size={18} className="text-white" />
             </button>
