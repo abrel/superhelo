@@ -4,12 +4,7 @@ import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
-import {
-  BaseMessage,
-  HumanMessage,
-  SystemMessage,
-  trimMessages,
-} from '@langchain/core/messages';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import {
   START,
   END,
@@ -18,57 +13,10 @@ import {
 } from '@langchain/langgraph';
 import { MongoDBSaver } from '@langchain/langgraph-checkpoint-mongodb';
 import MongoManager from '@@/services/mongo';
+import { trimmer, filterOldLargeMessages } from '@@/utils/gpt';
 import { getFileContent } from '@@/utils/document';
 
-const MAX_TOKENS = 150000;
-
-const tokenCounter = (msg: BaseMessage): number => {
-  let text: string;
-  if (typeof msg.content === 'string') {
-    text = msg.content;
-  } else if (Array.isArray(msg.content)) {
-    text = msg.content
-      .map((item) => (typeof item === 'string' ? item : JSON.stringify(item)))
-      .join(' ');
-  } else {
-    text = JSON.stringify(msg.content);
-  }
-
-  return text.length / 4;
-};
-
-const filterOldLargeMessages = (
-  msgs: BaseMessage[],
-  preserveCount: number = 5,
-): BaseMessage[] => {
-  return msgs.filter((msg, idx) => {
-    if (idx >= msgs.length - preserveCount) {
-      return true;
-    }
-
-    return tokenCounter(msg) < MAX_TOKENS / 5;
-  });
-};
-
-const customTokenCounter = (msgs: BaseMessage[]): number => {
-  let totalTokens = 0;
-
-  for (const msg of msgs) {
-    totalTokens += tokenCounter(msg);
-  }
-
-  return totalTokens;
-};
-
-const trimmer = trimMessages({
-  maxTokens: MAX_TOKENS,
-  strategy: 'last',
-  tokenCounter: customTokenCounter,
-  includeSystem: true,
-  allowPartial: true,
-});
-
-class GuardianChatBot {
+class MistralGuardianChatBot {
   app: any;
 
   constructor() {
@@ -81,20 +29,19 @@ class GuardianChatBot {
       const promptTemplate = ChatPromptTemplate.fromMessages([
         new SystemMessage(
           `
-          Vous êtes un expert en tutelle et en protection juridique en France.
-          Vous possédez une connaissance approfondie de la tutelle, de la curatelle et des procédures juridiques associées, ainsi que des conseils pratiques pour les tuteurs et leurs protégés.
-          Veuillez fournir des réponses claires, professionnelles, empathiques et concises en français.
-          Si vous pensez que cela s'avère utile pour faire une meilleure réponse, vous demanderez les informations nécessaires ; par exemple :
-            - le type de mesure
-            - l'âge de la personne concernée
-            - le lieu de résidence de la personne concernée
-            - la situation familiale de la personne concernée
-            - le statut de la personne posant la question vis à vis de la personne concernée
-            - ...
+          Vous êtes un expert reconnu en protection juridique en France. Votre expertise couvre notamment la tutelle, la curatelle et l'ensemble des procédures juridiques associées, ainsi que les conseils pratiques destinés aux tuteurs et à leurs protégés.
+          Fournissez des réponses claires, précises, concises et empathiques en français, en tenant compte de la situation personnelle du demandeur dès que cela est pertinent. Pour affiner vos réponses, n’hésitez pas à solliciter les informations complémentaires nécessaires, telles que :
+          - Le type de mesure envisagée (tutelle, curatelle, etc.)
+          - L’âge de la personne concernée
+          - Le lieu de résidence (pour prendre en compte d’éventuelles spécificités locales)
+          - La situation familiale
+          - Le lien entre la personne posant la question et la personne concernée
+          - Tout autre élément pertinent à votre jugement
 
-          Vous n'oublierez pas d'évolquer les impacts financiers lorsque cela s'avère pertinent.
-          Vous n'hésiterez pas à proposer, en fin de réponse, de l'aide supplémentaire, des ressources ou des conseils en rapport avec la question posée si cela est pertinent.
-          Vous ne signerez pas vos messages.
+          Veillez également à aborder les impacts financiers lorsque cela s’avère nécessaire.
+          En fin de réponse, proposez des aides supplémentaires (par exemple : assistance à la rédaction de courriers ou d’e-mails, orientation vers des ressources spécialisées, ou conseils complémentaires) si cela peut bénéficier au demandeur.
+          Vos réponses doivent s’appuyer sur les textes légaux et les meilleures pratiques en vigueur.
+          N’ajoutez pas de signature à vos messages. Si vous avez besoin de plus d’informations pour répondre à une question, demandez-les de manière naturelle et empathique.
           `,
         ),
         new MessagesPlaceholder('messages'),
@@ -179,4 +126,4 @@ class GuardianChatBot {
   };
 }
 
-export default new GuardianChatBot();
+export default new MistralGuardianChatBot();

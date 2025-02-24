@@ -55,11 +55,11 @@ const SigninPage: React.FC = () => {
   }, [auth.accessToken, navigate]);
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-cyan-400">
-      <img src="/logo.svg" className="w-40 mb-4 sm:mb-6" />
-      <div className="relative p-10 pb-4 w-[300px] rounded-xl flex flex-col bg-white opacity-90 sm:w-[600px]">
+    <div className="flex flex-col justify-center items-center bg-cyan-400 h-screen">
+      <img src="/logo_blackyellow.svg" className="h-16 mb-4 sm:mb-6" />
+      <div className="relative p-4 sm:p-10 pb-4 w-[300px] rounded-xl flex flex-col bg-white opacity-90 sm:w-[600px]">
         <form autoComplete="off">
-          <p className="font-main text-2xl text-main text-center mb-12">
+          <p className="font-main text-xl sm:text-2xl text-main text-center mb-8 sm:mb-12">
             Accès Mandataire
           </p>
           <div className="flex flex-col space-y-10 sm:space-y-12">
@@ -83,7 +83,7 @@ const SigninPage: React.FC = () => {
         </form>
         <button
           type="button"
-          className="font-main text-base bg-cyan-400 p-3 mt-10"
+          className="font-main text-base bg-cyan-400 p-3 mt-6 sm:mt-10"
           onClick={handleSubmit(loginHandler)}
           disabled={isSubmitting}
         >
@@ -116,7 +116,7 @@ const SigninPage: React.FC = () => {
           </a>
         </p>
 
-        <div className="mt-8 font-main text-center">
+        <div className="mt-4 sm:mt-8 font-main text-center">
           <p className="text-sm">Pas encore de compte ?</p>
           <Link
             to="/register"

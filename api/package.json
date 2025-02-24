@@ -17,6 +17,7 @@
     "@langchain/langgraph-checkpoint-mongodb": "^0.0.5",
     "@langchain/mistralai": "^0.2.0",
     "@langchain/openai": "^0.4.4",
+    "@langchain/xai": "^0.0.2",
     "@sentry/cli": "^2.38.2",
     "@sentry/node": "^8.38.0",
     "@sentry/profiling-node": "^8.38.0",

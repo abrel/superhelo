@@ -14,7 +14,7 @@ const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
       <div className="relative sm:bg-white flex sm:mt-0 w-full sm:w-[190px]">
         <div className="w-full sm:w-[190px] sm:fixed sm:h-full">
           <Link to="/home" className="block mx-auto w-fit m-3">
-            <img src="/logo.svg" className="w-28" />
+            <img src="/logo_blackyellow.svg" className="h-10" />
           </Link>
         </div>
       </div>
@@ -25,7 +25,7 @@ const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
       <div className="bg-white flex flex-col justify-between h-full fixed">
         <div className="flex flex-col">
           <Link to="/home" className="mt-6 mb-4 ml-3">
-            <img src="/logo.svg" className="w-28" />
+            <img src="/logo_blackyellow.svg" className="h-10" />
           </Link>
 
           <Section Icon={BiClinic} title="Mes mesures" to="/wards" />

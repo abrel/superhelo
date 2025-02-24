@@ -142,8 +142,8 @@ const ConversationPage: React.FC = () => {
   }, [isSuccess, data, conversationId, navigate]);
 
   return (
-    <div className="relative flex flex-col px-8 sm:p-0 h-[calc(100svh-60px)] sm:h-screen">
-      <div className="flex-1 overflow-y-auto p-4">
+    <div className="relative flex flex-col px-6 py-4 h-[calc(100svh-60px)] sm:h-screen">
+      <div className="flex-1 overflow-y-auto">
         {!conversation?.length && !isLoading && (
           <p className="mt-4 text-center px-4 w-fit mx-auto sm:w-[500px]">
             Bonjour je suis&nbsp;
@@ -159,7 +159,7 @@ const ConversationPage: React.FC = () => {
               key={message.id}
               id={message.id}
               className={cx(
-                'relative mb-4 p-4 rounded-lg break-words max-w-[800px] w-4/5 sm:w-fit',
+                'relative mb-4 p-4 rounded-lg break-words max-w-[calc(100%-20px)] sm:max-w-[800px] w-fit',
                 message.type === MessageTypes.HUMAN
                   ? 'bg-green-200 ml-auto'
                   : 'bg-gray-200 mr-auto',
@@ -201,7 +201,7 @@ const ConversationPage: React.FC = () => {
             <div
               key="current-message"
               className={cx(
-                'relative mb-4 p-4 rounded-lg max-w-[800px] w-4/5 sm:w-fit bg-green-200 ml-auto',
+                'relative mb-4 p-4 rounded-lg break-words max-w-[calc(100%-20px)] sm:max-w-[800px] w-fit bg-green-200 ml-auto',
               )}
             >
               {questionInProcess?.files?.map((file, i) => (

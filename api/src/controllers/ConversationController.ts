@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isAIMessage } from '@langchain/core/messages';
-import GuardianChatBot from '@@/services/gpt/mistral/chat';
+import MistralGuardianChatBot from '@@/services/gpt/mistral/chat';
 import * as MessageRepository from '@@/services/mongo/repositories/Message';
 import { MessageTypes } from '@@/constants/message';
 
@@ -22,7 +22,7 @@ export const handleQuestion = async (
   next: NextFunction,
 ) => {
   try {
-    const response = await GuardianChatBot.askQuestion({
+    const response = await MistralGuardianChatBot.askQuestion({
       question: req.body.question,
       threadId: req.sh.conversationId!,
       files: req.files,

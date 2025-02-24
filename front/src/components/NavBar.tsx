@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
   return (
-    <div className="flex flex-row px-8 py-4 mb-8 justify-between items-center">
+    <div className="flex flex-row px-4 sm:px-8 py-4 mb-8 justify-between items-center">
       <Link
         to="https://www.superhelo.fr"
         className=""
         rel="noopener noreferrer"
         target="_blank"
       >
-        <img src="/logo.svg" className="w-16 sm:w-48" />
+        <img src="/logo_blackyellow.svg" className="h-8 sm:h-12" />
       </Link>
 
       <div className="flex flex-row items-center space-x-2 sm:space-x-8 md:space-x-12">

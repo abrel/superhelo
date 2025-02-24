@@ -751,7 +751,7 @@
     zod "^3.23.8"
     zod-to-json-schema "^3.22.4"
 
-"@langchain/openai@^0.4.4":
+"@langchain/openai@^0.4.4", "@langchain/openai@~0.4.4":
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/@langchain/openai/-/openai-0.4.4.tgz#1832420495c53c28aa4e6515583bad8f0b83a637"
   integrity sha512-UZybJeMd8+UX7Kn47kuFYfqKdBCeBUWNqDtmAr6ZUIMMnlsNIb6MkrEEhGgAEjGCpdT4CU8U/DyyddTz+JayOQ==
@@ -760,6 +760,14 @@
     openai "^4.77.0"
     zod "^3.22.4"
     zod-to-json-schema "^3.22.3"
+
+"@langchain/xai@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@langchain/xai/-/xai-0.0.2.tgz#8926396d661597745a2077dd6764b6696750a67a"
+  integrity sha512-wVOs7SfJs4VWk/oiHJomaoaZ+r9nQhPqbEXlQ2D8L0d54PxYhb1ILR9rub9LT1RpqazSX8HG4A8+hX4R01qkSg==
+  dependencies:
+    "@langchain/openai" "~0.4.4"
+    zod "^3.24.2"
 
 "@mapbox/node-pre-gyp@^1.0.0":
   version "1.0.11"
@@ -6197,3 +6205,8 @@ zod@^3.22.4, zod@^3.23.8:
   version "3.23.8"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
   integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==
+
+zod@^3.24.2:
+  version "3.24.2"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.2.tgz#8efa74126287c675e92f46871cfc8d15c34372b3"
+  integrity sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==

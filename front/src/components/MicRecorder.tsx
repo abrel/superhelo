@@ -125,7 +125,7 @@ const MicRecorder: React.FC<{
     }
 
     return (
-      <div className="flex gap-2">
+      <div className="flex flex-row items-center gap-2 w-fit mx-auto">
         <button
           onClick={handleCancel}
           className="h-6 w-6 bg-gray-500 rounded-full flex flex-col items-center justify-center"
@@ -154,7 +154,7 @@ const MicRecorder: React.FC<{
   }, [recording, audioLevels, handleCancel, handleValidate]);
 
   return (
-    <div className="">
+    <div className="w-full">
       {recordingFeedback}
 
       {!recording && (
