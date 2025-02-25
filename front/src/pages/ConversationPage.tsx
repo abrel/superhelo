@@ -142,14 +142,14 @@ const ConversationPage: React.FC = () => {
   }, [isSuccess, data, conversationId, navigate]);
 
   return (
-    <div className="relative flex flex-col px-6 py-4 h-[calc(100svh-60px)] sm:h-screen">
+    <div className="relative flex flex-col px-8 py-4 h-[calc(100svh-60px)] sm:h-screen">
       <div className="flex-1 overflow-y-auto">
         {!conversation?.length && !isLoading && (
           <p className="mt-4 text-center px-4 w-fit mx-auto sm:w-[500px]">
             Bonjour je suis&nbsp;
             <span className="text-black text-lg font-bold">Super</span>
             <span className="text-yellow-500 text-lg font-bold ml-1">Hélo</span>
-            , je suis là pour répondre à toutes vos question sur les mesures de
+            , je suis là pour répondre à toutes vos questions sur les mesures de
             protection des majeurs. Que puis-je faire pour vous ?
           </p>
         )}
@@ -300,7 +300,7 @@ const ConversationPage: React.FC = () => {
                 htmlFor="files"
                 className="bg-gray-200 p-1 m-0.5 mr-1 rounded-md cursor-pointer"
               >
-                <LuPaperclip size={18} />
+                <LuPaperclip className="h-5 w-5" />
                 <Controller
                   control={control}
                   name="files"
@@ -335,7 +335,7 @@ const ConversationPage: React.FC = () => {
               disabled={isSubmitting}
               className="bg-gray-500 m-0.5 p-1 rounded-md ml-2"
             >
-              <LuArrowUpFromLine size={18} className="text-white" />
+              <LuArrowUpFromLine className="text-white h-5 w-5" />
             </button>
           </div>
         </div>

@@ -13,9 +13,14 @@ const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
     return (
       <div className="relative sm:bg-white flex sm:mt-0 w-full sm:w-[190px]">
         <div className="w-full sm:w-[190px] sm:fixed sm:h-full">
-          <Link to="/home" className="block mx-auto w-fit m-3">
+          <a
+            href="https://www.superhelo.fr"
+            className="block mx-auto w-fit m-3"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img src="/logo_blackyellow.svg" className="h-10" />
-          </Link>
+          </a>
         </div>
       </div>
     );

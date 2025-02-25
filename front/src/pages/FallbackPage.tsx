@@ -16,17 +16,13 @@ const Fallback: React.FC = () => {
       </p>
       <p>Merci de votre patience et de votre compréhension.</p>
 
-      <Link to="/" className="p-3 bg-cyan-400 rounded-lg mt-10 w-fit mx-auto">
+      <Link
+        to="/"
+        reloadDocument
+        className="p-3 bg-yellow-500 rounded-lg mt-10 w-fit mx-auto"
+      >
         <span className="text-white">Retour à la page d'accueil</span>
       </Link>
-
-      <p className="my-1">ou</p>
-
-      <button className="" onClick={() => window.location.reload()}>
-        <span className="text-cyan-400 underline">
-          Rafraichir la page (pour charger le code le plus à jour)
-        </span>
-      </button>
     </div>
   );
 };

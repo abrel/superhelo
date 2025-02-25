@@ -128,9 +128,9 @@ const MicRecorder: React.FC<{
       <div className="flex flex-row items-center gap-2 w-fit mx-auto">
         <button
           onClick={handleCancel}
-          className="h-6 w-6 bg-gray-500 rounded-full flex flex-col items-center justify-center"
+          className="h-5 w-5 bg-gray-500 p-1 rounded-full flex flex-col items-center justify-center"
         >
-          <IoCloseOutline size={16} className="text-white" />
+          <IoCloseOutline className="text-white h-5 w-5" />
         </button>
         <div className="flex items-end h-6 bg-gray-200 rounded overflow-hidden">
           {audioLevels.map((level, index) => {

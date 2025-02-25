@@ -18,11 +18,10 @@ export default function DocumentRouter(_app: Application): Router {
   router.param('documentId', hasAccessToDocument);
 
   router.get('/:documentId', renderDocuments);
-  router.get('/:documentId/view', viewDocument);
-  router.get('/:documentId/:convervationId/view', [
-    hasAccessToDocument,
+  router.get(
+    ['/:documentId/view', '/:documentId/:convervationId/view'],
     viewDocument,
-  ]);
+  );
   router.delete('/:documentId', deleteDocument);
   router.patch('/:documentId', [patchDocument, renderDocuments]);
 
