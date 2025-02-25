@@ -10,7 +10,7 @@ const NavBar: React.FC = () => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <img src="/logo_blackyellow.svg" className="h-8 sm:h-12" />
+        <img src="/logo.svg" className="h-8 sm:h-12" />
       </Link>
 
       <div className="flex flex-row items-center space-x-2 sm:space-x-8 md:space-x-12">

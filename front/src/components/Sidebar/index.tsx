@@ -19,7 +19,7 @@ const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src="/logo_blackyellow.svg" className="h-10" />
+            <img src="/logo.svg" className="h-10" />
           </a>
         </div>
       </div>
@@ -30,7 +30,7 @@ const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
       <div className="bg-white flex flex-col justify-between h-full fixed">
         <div className="flex flex-col">
           <Link to="/home" className="mt-6 mb-4 ml-3">
-            <img src="/logo_blackyellow.svg" className="h-10" />
+            <img src="/logo.svg" className="h-10" />
           </Link>
 
           <Section Icon={BiClinic} title="Mes mesures" to="/wards" />

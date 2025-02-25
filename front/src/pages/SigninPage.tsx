@@ -56,7 +56,7 @@ const SigninPage: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center items-center bg-cyan-400 h-screen">
-      <img src="/logo_blackyellow.svg" className="h-16 mb-4 sm:mb-6" />
+      <img src="/logo.svg" className="h-16 mb-4 sm:mb-6" />
       <div className="relative p-4 sm:p-10 pb-4 w-[300px] rounded-xl flex flex-col bg-white opacity-90 sm:w-[600px]">
         <form autoComplete="off">
           <p className="font-main text-xl sm:text-2xl text-main text-center mb-8 sm:mb-12">

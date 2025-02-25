@@ -4,11 +4,7 @@ import { Link } from 'react-router-dom';
 const Fallback: React.FC = () => {
   return (
     <div className="font-main text-main flex flex-col justify-center h-screen max-w-lg mx-auto text-center">
-      <img
-        src="/logo_blackyellow.svg"
-        alt="Error"
-        className="h-22 mx-auto mb-8"
-      />
+      <img src="/logo.svg" alt="Error" className="h-22 mx-auto mb-8" />
       <h1 className="mb-8 text-2xl">Oups ! Quelque chose s'est mal passé...</h1>
       <p className="mb-4">
         Nous sommes désolés pour le désagrément. L'erreur a été enregistrée et
