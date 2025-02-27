@@ -156,44 +156,54 @@ const ConversationPage: React.FC = () => {
         <div className="mx-auto w-full sm:max-w-[1000px]">
           {conversation?.map((message) => (
             <div
-              key={message.id}
-              id={message.id}
               className={cx(
-                'relative mb-4 p-4 rounded-lg break-words max-w-[calc(100%-20px)] sm:max-w-[800px] w-fit',
+                'flex flex-row items-start relative p-4 mb-4 rounded-lg break-words max-w-[calc(100%-20px)] sm:max-w-[800px] w-fit',
                 message.type === MessageTypes.HUMAN
-                  ? 'bg-green-200 ml-auto'
-                  : 'bg-gray-200 mr-auto',
+                  ? 'bg-yellow-200 opacity-90 ml-auto'
+                  : 'bg-gray-200 mr-auto pl-2',
               )}
             >
-              {message?.documentIds?.map((doc) => (
-                <AuthenticatedLink
-                  key={doc.id}
-                  documentId={`${doc.id}/${message.conversationId}`}
-                  className="flex flex-row items-center mb-1 bg-gray-100 border border-gray-200 p-1 rounded-md w-fit"
-                >
-                  {doc.mimetype.includes('image') ? (
-                    <AuthenticatedImage
-                      documentId={`${doc.id}/${message.conversationId}`}
-                      alt={doc.name}
-                      className="h-10 w-10 content-center object-cover rounded-lg"
-                    />
-                  ) : (
-                    <IoDocumentTextOutline size={22} />
-                  )}
-                  <span className="ml-1">{doc.name}</span>
-                </AuthenticatedLink>
-              ))}
+              {message.type === MessageTypes.AI && (
+                <div className="mr-2 mt-0.5">
+                  <img
+                    alt="SuperHelo"
+                    src="/sh_avatar_256.jpeg"
+                    className="w-10 rounded-full"
+                  />
+                </div>
+              )}
 
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: formatMessageText(message.content),
-                }}
-              />
+              <div key={message.id} id={message.id} className="w-fit">
+                {message?.documentIds?.map((doc) => (
+                  <AuthenticatedLink
+                    key={doc.id}
+                    documentId={`${doc.id}/${message.conversationId}`}
+                    className="flex flex-row items-center mb-1 bg-gray-100 border border-gray-200 p-1 rounded-md w-fit"
+                  >
+                    {doc.mimetype.includes('image') ? (
+                      <AuthenticatedImage
+                        documentId={`${doc.id}/${message.conversationId}`}
+                        alt={doc.name}
+                        className="h-10 w-10 content-center object-cover rounded-lg"
+                      />
+                    ) : (
+                      <IoDocumentTextOutline size={22} />
+                    )}
+                    <span className="ml-1">{doc.name}</span>
+                  </AuthenticatedLink>
+                ))}
 
-              <div className="flex flex-row justify-end">
-                <p className="text-sm text-gray-500 text-right italic mr-1">
-                  {moment(message.createdAt).calendar()}
-                </p>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: formatMessageText(message.content),
+                  }}
+                />
+
+                <div className="flex flex-row justify-end">
+                  <p className="text-sm text-gray-500 text-right italic mr-1">
+                    {moment(message.createdAt).calendar()}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
