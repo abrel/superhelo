@@ -34,7 +34,10 @@ export const authApi = api.injectEndpoints({
       query: (body) => ({
         url: `auth/reset-password`,
         method: 'POST',
-        body,
+        body: {
+          ...body,
+          role: Roles.GUARDIAN,
+        },
       }),
     }),
     changePassword: builder.mutation<

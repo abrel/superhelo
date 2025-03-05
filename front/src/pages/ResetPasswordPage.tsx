@@ -48,7 +48,7 @@ const ResetPasswordPage: React.FC = () => {
       </p>
       <StandardInput
         register={register}
-        id="username"
+        id="email"
         label="Email (*)"
         placeholder="Email"
         error={errors?.email}
