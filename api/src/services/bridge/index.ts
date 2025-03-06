@@ -263,7 +263,7 @@ class BridgeService {
         },
       });
       resources = resources.concat(data.resources);
-      url = data.pagination.next_uri;
+      url = data.pagination.next_uri?.replace('/v3/aggregation', '');
     }
 
     return resources;
