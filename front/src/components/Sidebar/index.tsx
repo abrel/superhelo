@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import { BiClinic } from 'react-icons/bi';
 import { IoCalendarClearOutline } from 'react-icons/io5';
-import { BiConversation } from 'react-icons/bi';
 
 import Section from '@@/components/Sidebar/Section';
 import Footer from '@@/components/Sidebar/Footer';
@@ -38,11 +37,6 @@ const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
             Icon={IoCalendarClearOutline}
             title="Calendrier"
             to="/calendar"
-          />
-          <Section
-            Icon={BiConversation}
-            title="Messagerie"
-            to="/conversations"
           />
         </div>
 

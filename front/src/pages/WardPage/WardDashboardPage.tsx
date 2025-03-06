@@ -27,6 +27,7 @@ enum Tabs {
   INVENTORY = 'inventaire',
   PASWWORDS = 'passwords',
   DOCUMENTS = 'documents',
+  CONVERSATIONS = 'messagerie',
 }
 
 const translateTab = (tab: string) => {
@@ -167,6 +168,8 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
         return <PasswordForm form={form} />;
       case Tabs.DOCUMENTS:
         return <DocumentSection userId={wardId} />;
+      default:
+        return null;
     }
   };
 
@@ -197,15 +200,27 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
           {ward.firstName} {ward.lastName}
         </h2>
         <div className="flex flex-row items-center space-x-6 border-b border-slate-200 pb-2 mt-4">
-          {Object.values(Tabs).map((tab) => (
-            <Tab
-              key={tab}
-              id={tab}
-              title={translateTab(tab)}
-              isActive={activeTab === tab}
-              cb={setActiveTab}
-            />
-          ))}
+          {Object.values(Tabs).map((tab) => {
+            if (tab === Tabs.CONVERSATIONS) {
+              return (
+                <Link
+                  to={`/wards/${wardId}/conversations`}
+                  className="font-semibold text-sm text-slate-700"
+                >
+                  Conversations IA
+                </Link>
+              );
+            }
+            return (
+              <Tab
+                key={tab}
+                id={tab}
+                title={translateTab(tab)}
+                isActive={activeTab === tab}
+                cb={setActiveTab}
+              />
+            );
+          })}
         </div>
         {content()}
       </div>

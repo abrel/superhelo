@@ -64,7 +64,9 @@ export const findBridgeTransactionsBy = async (
       deleted: false,
     })
     .sort({ date: -1 })
-    .select(selectableBridgeTransactionFields);
+    .select(selectableBridgeTransactionFields) as Promise<
+    Bridge.MongoTransaction[]
+  >;
 };
 
 export const createBridgeTransaction = (

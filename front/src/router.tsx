@@ -70,6 +70,14 @@ const router = createBrowserRouter([
             path: ':wardId/accounts/:accountId',
             element: <AccountPage />,
           },
+          {
+            path: ':wardId/conversations',
+            element: <ConversationPage />,
+          },
+          {
+            path: ':wardId/conversations/:conversationId',
+            element: <ConversationPage />,
+          },
         ],
       },
       {

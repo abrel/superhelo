@@ -4,17 +4,38 @@ import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import {
+  HumanMessage,
+  SystemMessage,
+  BaseMessage,
+} from '@langchain/core/messages';
 import {
   START,
   END,
-  MessagesAnnotation,
   StateGraph,
+  Annotation,
+  messagesStateReducer,
 } from '@langchain/langgraph';
 import { MongoDBSaver } from '@langchain/langgraph-checkpoint-mongodb';
+import omit from 'lodash.omit';
 import MongoManager from '@@/services/mongo';
+import * as User from '@@/services/mongo/repositories/User';
+import * as Document from '@@/services/mongo/repositories/Document';
+import * as BridgeTransaction from '@@/services/mongo/repositories/BridgeTransaction';
 import { trimmer, filterOldLargeMessages } from '@@/utils/gpt';
 import { getFileContent } from '@@/utils/document';
+
+const StateAnnotation = Annotation.Root({
+  messages: Annotation<BaseMessage[]>({
+    reducer: messagesStateReducer,
+    default: () => [],
+  }),
+  context: Annotation<string>({
+    reducer: (x: string, y: string) => y ?? x,
+    default: () =>
+      JSON.stringify({ user: 'Aucun contexte utilisateur n’est disponible.' }),
+  }),
+});
 
 class MistralGuardianChatBot {
   app: any;
@@ -25,12 +46,15 @@ class MistralGuardianChatBot {
       temperature: 0.3,
     });
 
-    const callModel = async (state: typeof MessagesAnnotation.State) => {
+    const callModel = async (state: typeof StateAnnotation.State) => {
       const promptTemplate = ChatPromptTemplate.fromMessages([
         new SystemMessage(
           `
             Vous êtes un expert reconnu en protection juridique des majeurs en France, spécialisé dans la tutelle, la curatelle et l’ensemble des procédures juridiques associées.
             Vos réponses doivent être claires, précises, directes, concises et efficaces et empreintes d’empathie, tout en restant accessibles à un public non spécialiste. Appuyez-vous sur les textes légaux actualisés et les meilleures pratiques en vigueur.
+
+            Contexte de la personne protégée lorsque disponible (au format JSON) :
+            ${state.context}
 
             Pour affiner vos réponses, n’hésitez pas à solliciter des informations complémentaires en posant au maximum deux questions par message de manière naturelle et empathique, par exemple concernant :
             - Le type de mesure envisagée (tutelle, curatelle, etc.)
@@ -58,6 +82,7 @@ class MistralGuardianChatBot {
       );
 
       const prompt = await promptTemplate.invoke({
+        userContext: state.context,
         messages: trimmedMessages,
       });
 
@@ -66,7 +91,7 @@ class MistralGuardianChatBot {
       return { messages: [response] };
     };
 
-    const workflow = new StateGraph(MessagesAnnotation)
+    const workflow = new StateGraph(StateAnnotation)
       .addNode('model', callModel)
       .addEdge(START, 'model')
       .addEdge('model', END);
@@ -81,13 +106,71 @@ class MistralGuardianChatBot {
     this.app = workflow.compile({ checkpointer: checkpointSaver });
   }
 
+  private retrieveUserContext = async (wardId?: string) => {
+    if (!wardId) {
+      return JSON.stringify({
+        user: 'Aucun contexte utilisateur n’est disponible.',
+      });
+    }
+
+    const [user, documents, transactions] = await Promise.all([
+      User.findUserById(wardId),
+      Document.findAllDocumentsBy({ userId: wardId }),
+      BridgeTransaction.findBridgeTransactionsBy({
+        userId: wardId,
+        deleted: false,
+      }),
+    ]);
+
+    if (!user) {
+      return JSON.stringify({
+        user: 'Aucun contexte utilisateur n’est disponible.',
+      });
+    }
+
+    return JSON.stringify({
+      user: omit(user.toJSON(), [
+        'password',
+        'guardianId',
+        'isDeleted',
+        'id',
+        '_id',
+        '__v',
+        'photoDocumentId',
+        'createdAt',
+        'updatedAt',
+      ]),
+      documents: documents.map((document) => document.name),
+      transactions: transactions
+        .map((transaction) =>
+          omit(transaction, [
+            '_id',
+            'id',
+            '__v',
+            'userId',
+            'booking_date',
+            'value_date',
+            'updatedAt',
+            'createdAt',
+            'deleted',
+            'category_id',
+            'account_id',
+            'transaction_id',
+          ]),
+        )
+        .slice(0, 20),
+    });
+  };
+
   askQuestion = async ({
     question,
     threadId,
+    wardId,
     files,
   }: {
     question: string;
     threadId: string;
+    wardId?: string;
     files?: Express.Multer.File[];
   }) => {
     const config = { configurable: { thread_id: threadId } };
@@ -126,7 +209,9 @@ class MistralGuardianChatBot {
     }
 
     messages.push(new HumanMessage(question));
-    const output = await this.app.invoke({ messages }, config);
+
+    const context = await this.retrieveUserContext(wardId);
+    const output = await this.app.invoke({ messages, context }, config);
 
     return output;
   };

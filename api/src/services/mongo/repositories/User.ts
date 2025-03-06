@@ -1,4 +1,5 @@
 import MongoManager from '@@/services/mongo';
+import { Types } from 'mongoose';
 import { selectableUserFields } from '@@/services/mongo/schemas/User';
 import HttpError from '@@/utils/HttpError';
 
@@ -7,8 +8,8 @@ export const findUserById = (id: string, extra?: string[]) => {
     ? selectableUserFields.concat(extra)
     : selectableUserFields;
 
-  if (!id) {
-    throw new HttpError('User id is required', 400);
+  if (!Types.ObjectId.isValid(id)) {
+    throw new HttpError(`Invalid id: ${id}`, 400);
   }
 
   return MongoManager.getModels()

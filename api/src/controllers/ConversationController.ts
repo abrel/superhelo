@@ -24,6 +24,7 @@ export const handleQuestion = async (
   try {
     const response = await MistralGuardianChatBot.askQuestion({
       question: req.body.question,
+      wardId: req.body.wardId,
       threadId: req.sh.conversationId!,
       files: req.files,
     });
@@ -31,9 +32,10 @@ export const handleQuestion = async (
     for (const message of response.messages) {
       if (message.id && typeof message.content === 'string') {
         const isFromAI = isAIMessage(message);
+
         await MessageRepository.findOrCreateMessage({
           conversationId: req.sh.conversationId!,
-          userId: req.sh.verifiedToken?.id,
+          userId: req.body.wardId,
           messageId: message.id,
           content: message.content,
           type: isFromAI ? MessageTypes.AI : MessageTypes.HUMAN,

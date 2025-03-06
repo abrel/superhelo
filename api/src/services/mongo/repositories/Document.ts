@@ -14,7 +14,7 @@ export const findAllDocumentsBy = async (
   return MongoManager.getModels()
     .Document.find(where)
     .sort({ documentCreationDate: 1, createdAt: 1 })
-    .select(selectableFields);
+    .select(selectableFields) as Promise<SH.Document[]>;
 };
 
 export const createDocument = (data: Partial<SH.Document>) =>

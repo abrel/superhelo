@@ -6,6 +6,7 @@ import {
   useHandleQuestionMutation,
   useRetriveConversationQuery,
 } from '@@/services/conversation';
+import { useGetUserQuery } from '@@/services/user';
 import { formatMessageText } from '@@/utils/format';
 import { MessageTypes } from '@@/constants/message';
 import { useForm, Controller } from 'react-hook-form';
@@ -19,6 +20,7 @@ import { LuArrowUpFromLine, LuPaperclip } from 'react-icons/lu';
 import { CiCirclePlus } from 'react-icons/ci';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { TiDelete } from 'react-icons/ti';
+import { BsArrowLeft } from 'react-icons/bs';
 
 import MicRecorder from '@@/components/MicRecorder';
 
@@ -37,14 +39,18 @@ type ConversationInput = {
 };
 
 const ConversationPage: React.FC = () => {
-  const { conversationId } = useParams<{
+  const { conversationId, wardId } = useParams<{
     conversationId?: string;
+    wardId?: string;
   }>();
   const navigate = useNavigate();
   const [handleQuestion, { isLoading, isSuccess, data }] =
     useHandleQuestionMutation();
 
   const { data: conversation } = useRetriveConversationQuery(conversationId);
+  const { data: ward } = useGetUserQuery(wardId || '', {
+    skip: !wardId,
+  });
 
   const {
     register,
@@ -73,6 +79,7 @@ const ConversationPage: React.FC = () => {
         question: input.question,
         files: input.files,
         conversationId,
+        wardId,
       });
 
       setQuestionInProcess({
@@ -86,7 +93,7 @@ const ConversationPage: React.FC = () => {
           ?.scrollIntoView({ block: 'end', behavior: 'smooth' });
       }, 500);
     },
-    [conversationId, handleQuestion, setQuestionInProcess],
+    [conversationId, wardId, handleQuestion, setQuestionInProcess],
   );
 
   const handleKeyDown = useCallback(
@@ -136,7 +143,13 @@ const ConversationPage: React.FC = () => {
     if (isSuccess) {
       setQuestionInProcess({ question: '', files: [] });
       if (!conversationId) {
-        navigate(`/conversations/${data?.[0]?.conversationId}`);
+        if (wardId) {
+          navigate(
+            `/wards/${wardId}/conversations/${data?.[0]?.conversationId}`,
+          );
+        } else {
+          navigate(`/conversations/${data?.[0]?.conversationId}`);
+        }
       }
     }
   }, [isSuccess, data, conversationId, navigate]);
@@ -144,6 +157,14 @@ const ConversationPage: React.FC = () => {
   return (
     <div className="relative flex flex-col px-8 py-4 h-[calc(100svh-60px)] sm:h-screen">
       <div className="flex-1 overflow-y-auto">
+        {!!wardId && (
+          <Link to={`/wards/${wardId}`} className="flex flex-row items-center">
+            <BsArrowLeft size={20} className="mr-1" />
+            <span className="text-slate-700 underline">
+              {ward?.firstName} {ward?.lastName}
+            </span>
+          </Link>
+        )}
         {!conversation?.length && !isLoading && (
           <p className="mt-4 text-center px-4 w-fit mx-auto sm:w-[500px]">
             Bonjour je suis&nbsp;
@@ -156,6 +177,7 @@ const ConversationPage: React.FC = () => {
         <div className="mx-auto w-full sm:max-w-[1000px]">
           {conversation?.map((message) => (
             <div
+              key={message.id}
               className={cx(
                 'flex flex-row items-start relative p-4 mb-4 rounded-lg break-words max-w-[calc(100%-20px)] sm:max-w-[800px] w-fit',
                 message.type === MessageTypes.HUMAN
@@ -173,7 +195,7 @@ const ConversationPage: React.FC = () => {
                 </div>
               )}
 
-              <div key={message.id} id={message.id} className="w-fit">
+              <div id={message.id} className="w-fit">
                 {message?.documentIds?.map((doc) => (
                   <AuthenticatedLink
                     key={doc.id}

@@ -5,7 +5,12 @@ export const conversationApi = api.injectEndpoints({
   endpoints: (builder) => ({
     handleQuestion: builder.mutation<
       SH.Message[],
-      { question: string; conversationId?: string; files?: File[] }
+      {
+        question: string;
+        conversationId?: string;
+        wardId?: string;
+        files?: File[];
+      }
     >({
       query: ({ files, ...body }) => {
         const formData = new FormData();
