@@ -18,6 +18,7 @@ import {
   updateBrigeItem,
   deleteBrigeItem,
   fetchAccountTransactions,
+  computeUserFinancialMetrics,
 } from '@@/controllers/UserController';
 import {
   singleUploadMiddleware,
@@ -91,6 +92,8 @@ export default function Userouter(_app: Application): Router {
     '/:userId/accounts/:accountId/transactions',
     fetchAccountTransactions,
   );
+
+  router.get('/:userId/financial-metrics', computeUserFinancialMetrics);
 
   return router;
 }

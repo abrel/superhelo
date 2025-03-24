@@ -71,6 +71,10 @@ export const bridgeApi = api.injectEndpoints({
         `/users/${userId}/accounts/${accountId}/transactions`,
       providesTags: ['BridgeTransactions'],
     }),
+    retrieveFinancialMetrics: builder.query<any, string>({
+      query: (userId) => `/users/${userId}/financial-metrics`,
+      providesTags: ['BridgeItems'],
+    }),
   }),
 });
 
@@ -80,4 +84,5 @@ export const {
   useUpdateBridgeConnectionUrlMutation,
   useDeleteBridgeItemMutation,
   useRetrieveAccountTransactionsQuery,
+  useRetrieveFinancialMetricsQuery,
 } = bridgeApi;

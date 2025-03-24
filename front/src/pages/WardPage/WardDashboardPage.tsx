@@ -13,6 +13,7 @@ import {
 } from '@@/constants/user';
 import { selectInputMeasureTypes } from '@@/constants/measure';
 import { BsArrowLeft } from 'react-icons/bs';
+import DashboardSection from '@@/components/DashboardSection';
 import WardForm, { schema, WardFormType } from '@@/components/Forms/WardForm';
 import MeasureForm from '@@/components/Forms/MeasureForm';
 import PasswordForm from '@@/components/Forms/PasswordForm';
@@ -21,6 +22,7 @@ import DocumentSection from '@@/components/DocumentSection';
 import BridgeSection from '@@/components/BridgeSection';
 
 enum Tabs {
+  DASHBOARD = 'dashboard',
   INFO = 'info',
   MEASURES = 'mesures',
   FINANCE = 'finance',
@@ -32,6 +34,8 @@ enum Tabs {
 
 const translateTab = (tab: string) => {
   switch (tab) {
+    case Tabs.DASHBOARD:
+      return 'Dashboard';
     case Tabs.INFO:
       return 'Informations';
     case Tabs.MEASURES:
@@ -78,7 +82,7 @@ const Tab: React.FC<{
 
 const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState(Tabs.INFO);
+  const [activeTab, setActiveTab] = useState(Tabs.DASHBOARD);
   const { data: ward } = useGetUserQuery(wardId, {
     skip: !wardId,
   });
@@ -156,6 +160,8 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
 
   const content = () => {
     switch (activeTab) {
+      case Tabs.DASHBOARD:
+        return <DashboardSection wardId={wardId} />;
       case Tabs.INFO:
         return <WardForm form={form} isNew={false} />;
       case Tabs.INVENTORY:
@@ -179,7 +185,7 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
 
   return (
     <div className="w-full p-4">
-      {![Tabs.FINANCE, Tabs.DOCUMENTS].includes(activeTab) && (
+      {![Tabs.FINANCE, Tabs.DASHBOARD, Tabs.DOCUMENTS].includes(activeTab) && (
         <div className="z-10 right-6 top-12 fixed">
           <button
             type="button"
@@ -204,6 +210,7 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
             if (tab === Tabs.CONVERSATIONS) {
               return (
                 <Link
+                  key={tab}
                   to={`/wards/${wardId}/conversations`}
                   className="font-semibold text-sm text-slate-700"
                 >

@@ -1,7 +1,7 @@
 const { Types } = require('mongoose');
 
 declare namespace Bridge {
-  export type UserAccount = {
+  export type User = {
     _id: Types.ObjectId;
     id: string;
     userId: Types.ObjectId;
@@ -12,7 +12,7 @@ declare namespace Bridge {
     createdAt?: Date;
     updatedAt?: Date;
 
-    save: () => Promise<UserAccount>;
+    save: () => Promise<User>;
     __v?: number;
   };
 
@@ -49,28 +49,11 @@ declare namespace Bridge {
     tags: { segment: string[] };
   };
 
-  export type Account = {
-    id: number;
-    name: string;
-    balance: number;
-    accounting_balance: number;
-    instant_balance: number;
-    updated_at: Date;
-    last_refresh_status: string;
-    type: string;
-    currency_code: string;
-    item_id: number;
-    provider_id: number;
-    data_access: string;
-    pro: boolean;
-    iban: string;
-  };
-
   export type Item = {
     id: number;
     status: number;
     status_code_info: string;
-    status_code_description: string;
+    status_code_description?: string;
     provider_id: number;
     account_types: string;
     last_successful_refresh: Date;
@@ -81,6 +64,90 @@ declare namespace Bridge {
     accounts?: Account[];
     provider_name?: string;
     provider_logo?: string;
+  };
+
+  export type MongoItem = {
+    _id: Types.ObjectId;
+    id: string;
+    userId: Types.ObjectId;
+    item_id: string;
+    status: number;
+    status_code_info: string;
+    status_code_description?: string;
+    provider_id: number;
+    account_types: string;
+    last_successful_refresh: Date;
+    last_try_refresh: Date;
+    created_at: Date;
+
+    createdAt?: Date;
+    updatedAt?: Date;
+
+    save: () => Promise<MongoItem>;
+    toObject: () => MongoItem;
+    __v?: number;
+
+    // Custom fields
+    accounts?: MongoAccount[];
+    provider_name?: string;
+    provider_logo?: string;
+  };
+
+  export type Loan = {
+    next_payment_date: string;
+    next_payment_amount: number;
+    maturity_date: string;
+    opening_date: string;
+    interest_rate: number;
+    borrowed_capital: number;
+    repaid_capital: number;
+    remaining_capital: number;
+    total_estimated_interests: number;
+  };
+
+  export type Account = {
+    id: number;
+    name: string;
+    balance: number;
+    accounting_balance?: number;
+    instant_balance?: number;
+    updated_at: Date;
+    last_refresh_status: string;
+    type: string;
+    currency_code: string;
+    item_id: number;
+    provider_id: number;
+    data_access: string;
+    pro: boolean;
+    iban?: string;
+    loan_details?: Loan;
+  };
+
+  export type MongoAccount = {
+    _id: Types.ObjectId;
+    id: string;
+    userId: Types.ObjectId;
+    account_id: string;
+    item_id: string;
+    name: string;
+    balance: number;
+    accounting_balance?: number;
+    instant_balance?: number;
+    updated_at: Date;
+    last_refresh_status: string;
+    type: string;
+    currency_code: string;
+    provider_id: number;
+    data_access: string;
+    pro: boolean;
+    iban?: string;
+    loan_details?: Loan;
+    createdAt?: Date;
+    updatedAt?: Date;
+
+    save: () => Promise<MongoAccount>;
+    toObject: () => MongoAccount;
+    __v?: number;
   };
 
   export type Transaction = {

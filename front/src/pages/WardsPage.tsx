@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { IoIosAddCircleOutline } from 'react-icons/io';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useFetchMyWardsQuery, useSearchWardsQuery } from '@@/services/user';
 import StandardInput from '@@/components/Inputs/StandardInput';
@@ -86,12 +85,8 @@ const DashboardPage: React.FC = () => {
           />
         </div>
         <div className="flex flex-row space-x-4">
-          <Link
-            to="/wards/new"
-            className="bg-cyan-400 rounded-lg p-2 flex flex-row items-center"
-          >
-            <IoIosAddCircleOutline size={24} color="white" />
-            <span className="text-white ml-1">Nouveau protégé</span>
+          <Link to="/wards/new" className="bg-sky-600 rounded-lg p-2">
+            <span className="text-white ml-1">+ Nouveau protégé</span>
           </Link>
         </div>
       </div>

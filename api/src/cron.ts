@@ -7,13 +7,13 @@ import BridgeService from '@@/services/bridge';
 
 const tz = 'Europe/Paris';
 
-// Sync transactions every day at 2am
+// Sync Bridge Data every day at 2am
 cron.schedule(
   '0 2 * * *',
   async () => {
     try {
-      await BridgeService.syncTransactions();
-      console.log('Sync Transactions : OK');
+      await BridgeService.syncBridgeData();
+      console.log('Task : syncBridgeData : OK');
     } catch (e) {
       Sentry.captureException(e);
     }

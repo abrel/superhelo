@@ -1,4 +1,5 @@
 import MongoManager from '@@/services/mongo';
+import { Types } from 'mongoose';
 import { selectableBridgeTransactionFields } from '@@/services/mongo/schemas/BridgeTransaction';
 import HttpError from '@@/utils/HttpError';
 
@@ -104,4 +105,46 @@ export const CreateOrUpdateBridgeTransaction = async (
   }
 
   return MongoManager.getModels().BridgeTransaction.create(data);
+};
+
+export const computeUserMontlhyMetrics = (userId: string) => {
+  return MongoManager.getModels().BridgeTransaction.aggregate([
+    {
+      $match: {
+        userId: new Types.ObjectId(userId),
+        deleted: {
+          $ne: true,
+        },
+      },
+    },
+    {
+      $project: {
+        month: {
+          $dateToString: {
+            format: '%Y-%m',
+            date: { $toDate: '$date' },
+          },
+        },
+        amount: 1,
+      },
+    },
+    {
+      $group: {
+        _id: '$month',
+        totalCredits: {
+          $sum: {
+            $cond: [{ $gt: ['$amount', 0] }, '$amount', 0],
+          },
+        },
+        totalExpenses: {
+          $sum: {
+            $cond: [{ $lt: ['$amount', 0] }, '$amount', 0],
+          },
+        },
+      },
+    },
+    {
+      $sort: { _id: -1 },
+    },
+  ]) as { _id: string; totalCredits: number; totalExpenses: number }[];
 };

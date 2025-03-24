@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import moment from 'moment';
 import bcrypt from 'bcryptjs';
 import omit from 'lodash.omit';
 import { createToken, createRefreshToken, tokenTTL } from '@@/services/jwt';
 import * as UserRepository from '@@/services/mongo/repositories/User';
+import * as BridgeItemRepository from '@@/services/mongo/repositories/BridgeItem';
+import * as BridgeAccountRepository from '@@/services/mongo/repositories/BridgeAccount';
 import * as BridgeTransactionRepository from '@@/services/mongo/repositories/BridgeTransaction';
 import BridgeService from '@@/services/bridge';
 import validator from '@@/validation/validator';
@@ -221,20 +224,28 @@ export const fetchBrigeItems = async (
 ) => {
   try {
     const [items, accounts] = await Promise.all([
-      BridgeService.retrieveUserItems(req.params.userId),
-      BridgeService.retrieveAccountsInformation(req.params.userId),
+      BridgeItemRepository.findBridgeItemsBy({
+        userId: req.params.userId,
+      }),
+      BridgeAccountRepository.findBridgeAccountsBy({
+        userId: req.params.userId,
+      }),
     ]);
 
-    for (const item of items) {
-      item.accounts = accounts
-        .filter((a) => a.item_id === item.id)
-        .sort((a, b) => b.balance - a.balance);
-      const provider = providers.find((p) => p.id === item.provider_id);
-      item.provider_name = provider?.name;
-      item.provider_logo = provider?.images?.logo;
-    }
+    return res.json(
+      items.map((item) => {
+        const itemJSON = item.toObject();
 
-    return res.json(items);
+        itemJSON.accounts = accounts.filter(
+          (a) => a.item_id === itemJSON.item_id,
+        );
+
+        const provider = providers.find((p) => p.id === itemJSON.provider_id);
+        itemJSON.provider_name = provider?.name;
+        itemJSON.provider_logo = provider?.images?.logo;
+        return itemJSON;
+      }),
+    );
   } catch (e) {
     return next(e);
   }
@@ -298,6 +309,35 @@ export const fetchAccountTransactions = async (
         account_id: req.params.accountId,
       }),
     );
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const computeUserFinancialMetrics = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const [balance, metrics] = await Promise.all([
+      BridgeAccountRepository.computeUserAccountBalance(req.params.userId),
+      BridgeTransactionRepository.computeUserMontlhyMetrics(req.params.userId),
+    ]);
+
+    const last3MonthsMetrics = metrics
+      .filter((m) => m._id !== moment().format('YYYY-MM'))
+      .slice(0, 3)
+      .reduce(
+        (acc, cur) => {
+          acc.income += cur.totalCredits / 3;
+          acc.expenses += cur.totalExpenses / 3;
+          return acc;
+        },
+        { income: 0, expenses: 0 },
+      );
+
+    return res.json({ balance, ...last3MonthsMetrics });
   } catch (e) {
     return next(e);
   }

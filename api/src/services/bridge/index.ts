@@ -1,5 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import Promise from 'bluebird';
+import * as BridgeUserRepositoryy from '@@/services/mongo/repositories/BridgeUser';
+import * as BridgeItemRepository from '@@/services/mongo/repositories/BridgeItem';
 import * as BridgeAccountRepository from '@@/services/mongo/repositories/BridgeAccount';
 import * as BridgeTransactionRepository from '@@/services/mongo/repositories/BridgeTransaction';
 import * as UserRepository from '@@/services/mongo/repositories/User';
@@ -95,8 +97,7 @@ class BridgeService {
 
   // logged routes
   findOrCreateToken = async (userId: string) => {
-    const account =
-      await BridgeAccountRepository.findBridgeAccountByUserId(userId);
+    const account = await BridgeUserRepositoryy.findBridgeUserByUserId(userId);
 
     if (!account) {
       try {
@@ -107,7 +108,7 @@ class BridgeService {
 
       const token = await this.authenticateUser(userId);
 
-      await BridgeAccountRepository.createBridgeAccount({
+      await BridgeUserRepositoryy.createBridgeUser({
         userId,
         uuid: token.user.uuid,
         accessToken: token.access_token,
@@ -126,7 +127,7 @@ class BridgeService {
 
     const token = await this.authenticateUser(userId);
 
-    await BridgeAccountRepository.updateBridgeAccountById(account._id, {
+    await BridgeUserRepositoryy.updateBridgeUserById(account._id, {
       accessToken: token.access_token,
       accessTokenExpiresAt: token.expires_at,
     });
@@ -221,6 +222,11 @@ class BridgeService {
       },
     });
 
+    await Promise.all([
+      BridgeItemRepository.deleteBridgeItemById(itemId),
+      BridgeAccountRepository.deleteBridgeAccountByItemId(itemId),
+    ]);
+
     return data;
   };
 
@@ -269,6 +275,39 @@ class BridgeService {
     return resources;
   };
 
+  syncItemsForUserId = async (userId: string) => {
+    const items = await this.retrieveUserItems(userId);
+
+    await Promise.map(
+      items,
+      async ({ id, accounts, ...item }) => {
+        return BridgeItemRepository.createOrUpdateBridgeItem({
+          userId,
+          item_id: String(id),
+          ...item,
+        });
+      },
+      { concurrency: 10 },
+    );
+  };
+
+  syncAccountsForUserId = async (userId: string) => {
+    const accounts = await this.retrieveAccountsInformation(userId);
+
+    await Promise.map(
+      accounts,
+      async ({ id, item_id, ...account }) => {
+        return BridgeAccountRepository.CreateOrUpdateBridgeAccount({
+          userId,
+          account_id: String(id),
+          item_id: String(item_id),
+          ...account,
+        });
+      },
+      { concurrency: 10 },
+    );
+  };
+
   syncTransactionsForUserId = async (userId: string) => {
     const transactions = await this.retrieveTransactions(userId, {
       limit: 500,
@@ -293,10 +332,12 @@ class BridgeService {
     );
   };
 
-  syncTransactions = async () => {
-    const accounts = await BridgeAccountRepository.findAllBridgeAccountsBy({});
-    for (const account of accounts) {
-      await this.syncTransactionsForUserId(account.userId);
+  syncBridgeData = async () => {
+    const users = await BridgeUserRepositoryy.findAllBridgeUsersBy({});
+    for (const { userId } of users) {
+      await this.syncItemsForUserId(userId);
+      await this.syncAccountsForUserId(userId);
+      await this.syncTransactionsForUserId(userId);
     }
   };
 
