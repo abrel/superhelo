@@ -8,7 +8,7 @@ const DashboardSection: React.FC<{ wardId: string }> = ({ wardId }) => {
   const { data: metrics } = useRetrieveFinancialMetricsQuery(wardId, {
     skip: !wardId,
   });
-  console.log(metrics);
+
   return (
     <div className="mt-4">
       <div className="grid grid-cols-2 gap-4">
@@ -92,9 +92,7 @@ const DashboardSection: React.FC<{ wardId: string }> = ({ wardId }) => {
       </div>
 
       <div className="p-4 border border-violet-200 bg-violet-50 w-full mt-8">
-        <p className="font-bold text-xl mb-2">
-          Comment puis-je faire pour vous aider ?
-        </p>
+        <p className="font-bold text-xl mb-2">Comment puis-je vous aider ?</p>
         <div className="p-4 grid grid-cols-3 gap-4">
           <Link to={`/wards/${wardId}/conversations`} className="bg-white p-2">
             Rédige un courier

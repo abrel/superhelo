@@ -33,8 +33,23 @@ export const conversationApi = api.injectEndpoints({
         conversationId ? `/conversations/${conversationId}` : '/conversations',
       providesTags: ['Conversations'],
     }),
+    retriveUserConversations: builder.query<
+      {
+        _id: string;
+        ward: SH.User;
+        firstMessage: SH.Message;
+        lastMessage: SH.Message;
+      }[],
+      string
+    >({
+      query: (userId) => `users/${userId}/conversations`,
+      providesTags: ['Conversations'],
+    }),
   }),
 });
 
-export const { useHandleQuestionMutation, useRetriveConversationQuery } =
-  conversationApi;
+export const {
+  useHandleQuestionMutation,
+  useRetriveConversationQuery,
+  useRetriveUserConversationsQuery,
+} = conversationApi;

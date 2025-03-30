@@ -7,14 +7,21 @@ const Section: React.FC<{
   Icon: React.FC<{ size?: number; className?: string }>;
   title: string;
   to: string;
+  not?: string;
   isError?: boolean;
   subSections?: { title: string; to: string }[];
-}> = ({ Icon, title, to, isError, subSections }) => {
+}> = ({ Icon, title, to, not, isError, subSections }) => {
   const location = useLocation();
-  const isSelected = useMemo(
-    () => location.pathname.includes(to),
-    [location.pathname, to],
-  );
+  const isSelected = useMemo(() => {
+    if (!location.pathname.includes(to)) {
+      return false;
+    }
+    if (not) {
+      return !location.pathname.includes(not);
+    }
+
+    return true;
+  }, [location.pathname, to, not]);
   const txtCS = useMemo(() => {
     if (isError) {
       return 'text-red-500';

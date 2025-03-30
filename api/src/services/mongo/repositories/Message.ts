@@ -62,3 +62,34 @@ export const findOrCreateMessage = async (
 
 export const deleteMessageById = (id: string) =>
   MongoManager.getModels().Message.deleteOne({ _id: id });
+
+export const retrieveConversationsForWards = async (wardIds: string[]) => {
+  return MongoManager.getModels().Message.aggregate([
+    { $match: { userId: { $in: wardIds } } },
+    {
+      $lookup: {
+        from: 'documents',
+        localField: 'documentIds',
+        foreignField: '_id',
+        as: 'documents',
+      },
+    },
+    { $sort: { createdAt: -1 } },
+    {
+      $group: {
+        _id: '$conversationId',
+        firstMessage: { $last: '$$ROOT' },
+        lastMessage: { $first: '$$ROOT' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'firstMessage.userId',
+        foreignField: '_id',
+        as: 'ward',
+      },
+    },
+    { $unwind: '$ward' },
+  ]);
+};

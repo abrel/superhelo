@@ -1,9 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-import { BiClinic } from 'react-icons/bi';
-import { IoCalendarClearOutline } from 'react-icons/io5';
-
+import { LuHouse, LuMessageSquare, LuShield, LuCalendar } from 'react-icons/lu';
 import Section from '@@/components/Sidebar/Section';
 import Footer from '@@/components/Sidebar/Footer';
 
@@ -32,12 +29,15 @@ const Sidebar: React.FC<{ logged?: boolean }> = ({ logged = true }) => {
             <img src="/logo.svg" className="h-10" />
           </Link>
 
-          <Section Icon={BiClinic} title="Mes mesures" to="/wards" />
+          <Section Icon={LuHouse} title="Acceuil" to="/home" />
           <Section
-            Icon={IoCalendarClearOutline}
-            title="Calendrier"
-            to="/calendar"
+            Icon={LuMessageSquare}
+            title="Messagerie"
+            to="/conversations"
+            not="wards"
           />
+          <Section Icon={LuShield} title="Mes mesures" to="/wards" />
+          <Section Icon={LuCalendar} title="Calendrier" to="/calendar" />
         </div>
 
         <Footer />

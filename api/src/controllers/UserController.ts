@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import omit from 'lodash.omit';
 import { createToken, createRefreshToken, tokenTTL } from '@@/services/jwt';
 import * as UserRepository from '@@/services/mongo/repositories/User';
+import * as MessageRepository from '@@/services/mongo/repositories/Message';
 import * as BridgeItemRepository from '@@/services/mongo/repositories/BridgeItem';
 import * as BridgeAccountRepository from '@@/services/mongo/repositories/BridgeAccount';
 import * as BridgeTransactionRepository from '@@/services/mongo/repositories/BridgeTransaction';
@@ -338,6 +339,35 @@ export const computeUserFinancialMetrics = async (
       );
 
     return res.json({ balance, ...last3MonthsMetrics });
+  } catch (e) {
+    return next(e);
+  }
+};
+
+export const retrieveUserConversations = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    switch (req.sh.user?.role) {
+      case Roles.GUARDIAN:
+        const wards = await UserRepository.findUsersBy({
+          guardianId: req.sh.user._id,
+        });
+        return res.json(
+          await MessageRepository.retrieveConversationsForWards(
+            wards.map((w) => w._id),
+          ),
+        );
+      case Roles.WARD:
+      default:
+        return res.json(
+          await MessageRepository.retrieveConversationsForWards([
+            req.params.userId,
+          ]),
+        );
+    }
   } catch (e) {
     return next(e);
   }

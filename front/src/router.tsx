@@ -9,6 +9,7 @@ import ResetPasswordPage from '@@/pages/ResetPasswordPage';
 import ChangePasswordPage from '@@/pages/ChangePasswordPage';
 import FallbackPage from '@@/pages/FallbackPage';
 
+import HomePage from '@@/pages/HomePage';
 import WardsPage from '@@/pages/WardsPage';
 import WardPage from '@@/pages/WardPage';
 import MePage from '@@/pages/MePage';
@@ -56,6 +57,11 @@ const router = createBrowserRouter([
             element: <ConversationPage />,
           },
         ],
+      },
+      {
+        path: '/home',
+        element: <PrivateRoute />,
+        children: [{ index: true, element: <HomePage /> }],
       },
       {
         path: '/wards',

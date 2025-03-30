@@ -19,6 +19,7 @@ import {
   deleteBrigeItem,
   fetchAccountTransactions,
   computeUserFinancialMetrics,
+  retrieveUserConversations,
 } from '@@/controllers/UserController';
 import {
   singleUploadMiddleware,
@@ -92,6 +93,8 @@ export default function Userouter(_app: Application): Router {
     '/:userId/accounts/:accountId/transactions',
     fetchAccountTransactions,
   );
+
+  router.get('/:userId/conversations', retrieveUserConversations);
 
   router.get('/:userId/financial-metrics', computeUserFinancialMetrics);
 

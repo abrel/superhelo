@@ -59,7 +59,7 @@ export const findUsersBy = async (where: Record<string, unknown>) => {
       ...where,
       isDeleted: false,
     })
-    .select(selectableUserFields);
+    .select(selectableUserFields) as Promise<SH.User[]>;
 };
 
 export const createUser = (data: Partial<SH.User>) =>

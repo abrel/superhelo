@@ -165,12 +165,15 @@ class BridgeService {
     userId: string;
     itemId: string;
   }) => {
-    const token = await this.findOrCreateToken(userId);
+    const [token, item] = await Promise.all([
+      this.findOrCreateToken(userId),
+      BridgeItemRepository.findBridgeItemById(itemId),
+    ]);
     const { data } = await this.aggregationInstance({
       method: 'POST',
       url: '/connect-sessions',
       data: {
-        item_id: Number(itemId),
+        item_id: Number(item.item_id),
         account_types: 'all',
         callback_url: `https://app.superhelo.fr/wards/${userId}#finance`,
       },

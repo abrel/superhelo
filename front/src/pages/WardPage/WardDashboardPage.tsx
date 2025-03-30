@@ -20,16 +20,18 @@ import PasswordForm from '@@/components/Forms/PasswordForm';
 import InventoryForm from '@@/components/Forms/InventoryForm';
 import DocumentSection from '@@/components/DocumentSection';
 import BridgeSection from '@@/components/BridgeSection';
+import OperationalReportSection from '@@/components/OperationalReportSection';
 
 enum Tabs {
   DASHBOARD = 'dashboard',
+  CONVERSATIONS = 'messagerie',
   INFO = 'info',
   MEASURES = 'mesures',
   FINANCE = 'finance',
   INVENTORY = 'inventaire',
-  PASWWORDS = 'passwords',
   DOCUMENTS = 'documents',
-  CONVERSATIONS = 'messagerie',
+  PASWWORDS = 'passwords',
+  OPERATIONAL_REPORT = 'operational_report',
 }
 
 const translateTab = (tab: string) => {
@@ -48,6 +50,8 @@ const translateTab = (tab: string) => {
       return 'Mots de passe';
     case Tabs.DOCUMENTS:
       return 'Documents';
+    case Tabs.OPERATIONAL_REPORT:
+      return 'Rapport de gestion';
 
     default:
       return tab;
@@ -174,6 +178,8 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
         return <PasswordForm form={form} />;
       case Tabs.DOCUMENTS:
         return <DocumentSection userId={wardId} />;
+      case Tabs.OPERATIONAL_REPORT:
+        return <OperationalReportSection wardId={wardId} />;
       default:
         return null;
     }
@@ -185,13 +191,18 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
 
   return (
     <div className="w-full p-4">
-      {![Tabs.FINANCE, Tabs.DASHBOARD, Tabs.DOCUMENTS].includes(activeTab) && (
+      {![
+        Tabs.FINANCE,
+        Tabs.DASHBOARD,
+        Tabs.DOCUMENTS,
+        Tabs.OPERATIONAL_REPORT,
+      ].includes(activeTab) && (
         <div className="z-10 right-6 top-12 fixed">
           <button
             type="button"
             onClick={form.handleSubmit(onSubmit)}
             disabled={form.formState.isSubmitting}
-            className="my-6 bg-cyan-400 rounded-lg p-2"
+            className="bg-sky-600 rounded-md p-1"
           >
             <span className="text-white ml-1">Valider</span>
           </button>
@@ -214,7 +225,7 @@ const WardDashboardPage: React.FC<{ wardId: string }> = ({ wardId }) => {
                   to={`/wards/${wardId}/conversations`}
                   className="font-semibold text-sm text-slate-700"
                 >
-                  Conversations IA
+                  Messagerie
                 </Link>
               );
             }

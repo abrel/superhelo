@@ -44,13 +44,13 @@ const SigninPage: React.FC = () => {
   useEffect(() => {
     if (isSuccess) {
       reset();
-      navigate('/wards');
+      navigate('/home');
     }
   }, [isSuccess, navigate, reset]);
 
   useEffect(() => {
     if (auth.accessToken) {
-      navigate('/wards');
+      navigate('/home');
     }
   }, [auth.accessToken, navigate]);
 

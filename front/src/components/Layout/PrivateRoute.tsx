@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { RootState } from '@@/store';
+import useIsLogged from '@@/hooks/useIsLogged';
 import Sidebar from '@@/components/Sidebar';
 
 const PrivateRoute: React.FC = () => {
-  const auth = useSelector((state: RootState) => state.auth);
+  const isLogged = useIsLogged();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!auth.accessToken) {
+    if (!isLogged) {
       navigate('/');
     }
-  }, [auth.accessToken, navigate]);
+  }, [isLogged, navigate]);
 
   return (
     <div className="flex flex-col flex-grow bg-slate-50 w-full">

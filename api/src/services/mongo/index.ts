@@ -20,7 +20,12 @@ class MongoManager {
 
   connect = async () => {
     try {
-      await mongoose.connect(process.env.MONGODB_URL);
+      await mongoose.connect(process.env.MONGODB_URL, {
+        maxPoolSize: 50,
+        minPoolSize: 5,
+        maxIdleTimeMS: 60000,
+        waitQueueTimeoutMS: 5000,
+      });
     } catch (e) {
       Sentry.captureException(e);
     }
